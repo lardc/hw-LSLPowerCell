@@ -238,10 +238,14 @@ void CONTROL_StartProcess()
 
 void CONTROL_StopProcess()
 {
-	LL_SetStateLineSync2(false);
-	LL_SetStateExtMsrLed(false);
+	float AfterPulseCoefficient, CurrentMaxValue;
 
-	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE];
+	LL_WriteDAC(0);
+	LL_SetStateLineSync(true);
+
+	CurrentMaxValue = DataTable[REG_CURRENT_PER_CURBOARD] * DataTable[REG_CURBOARD_QUANTITY];
+	AfterPulseCoefficient = (float)DataTable[REG_CURRENT_PULSE_VALUE] / CurrentMaxValue;
+	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
 
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }
