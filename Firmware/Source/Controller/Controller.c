@@ -12,6 +12,12 @@
 #include "Diagnostic.h"
 #include "BCCIxParams.h"
 #include "Measurement.h"
+#include "ConvertUtils.h"
+
+// Definitions
+#define CURRENT_RANGE0		0
+#define CURRENT_RANGE1		1
+#define CURRENT_RANGE2		2
 
 // Types
 //
@@ -32,6 +38,8 @@ volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 //
 volatile MeasureSample SampleParams;
 
+Int16U	CONTROL_CurrentRange = 0;
+
 /// Forward functions
 //
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
@@ -46,6 +54,9 @@ void CONTROL_StartProcess();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_SaveTestResult(bool ExcessCurrent, Int16U Problem);
 bool CONTROL_RegulatorCycle(float SampleCurrent);
+void CONTROL_StartPrepare();
+void CONTROL_CashVariables();
+Int16U CONTROL_GetCurrentRange();
 
 // Functions
 //
@@ -194,7 +205,6 @@ void CONTROL_LogicProcess()
 
 			case SS_PulsePrepare:
 				CONTROL_StartPrepare();
-				CONTROL_SetDeviceState(DS_ConfigReady, SS_None);
 				break;
 
 			case SS_WaitAfterPulse:
@@ -229,10 +239,38 @@ bool CONTROL_RegulatorCycle(float SampleCurrent)
 }
 //-----------------------------------------------
 
-void CONTROL_StartProcess()
+void CONTROL_StartPrepare()
 {
 	MEASURE_DMABuffersClear();
-	TIM_Start(TIM6);
+	CU_LoadConvertParams();
+	CONTROL_CashVariables();
+	CONTROL_SineConfig();
+
+	CONTROL_SetDeviceState(DS_ConfigReady, SS_None);
+}
+//-----------------------------------------------
+
+void CONTROL_CashVariables()
+{
+	// Кеширование коэффициентов регулятора
+	for(int i = 0; i < MEASURE_CURRENT_RANGE_QUANTITY; i++)
+	{
+		RegulatorParams[i].Kp = DataTable[REG_REGULATOR_RANGE0_Kp + i * 2];
+		RegulatorParams[i].Ki = DataTable[REG_REGULATOR_RANGE0_Ki + i * 2];
+	}
+
+	CONTROL_CurrentRange = CONTROL_GetCurrentRange();
+}
+//-----------------------------------------------
+
+Int16U CONTROL_GetCurrentRange()
+{
+	if(DataTable[REG_CURRENT_PULSE_VALUE] <= DataTable[REG_CURRENT_LEVEL_RANGE0])
+		return CURRENT_RANGE0;
+	else if(DataTable[REG_CURRENT_PULSE_VALUE] <= DataTable[REG_CURRENT_LEVEL_RANGE1])
+		return CURRENT_RANGE1;
+	else
+		return CURRENT_RANGE2;
 }
 //-----------------------------------------------
 
@@ -242,6 +280,7 @@ void CONTROL_StopProcess()
 
 	LL_WriteDAC(0);
 	LL_SetStateLineSync(true);
+	TIM_Stop(TIM15);
 
 	CurrentMaxValue = DataTable[REG_CURRENT_PER_CURBOARD] * DataTable[REG_CURBOARD_QUANTITY];
 	AfterPulseCoefficient = (float)DataTable[REG_CURRENT_PULSE_VALUE] / CurrentMaxValue;
@@ -250,6 +289,24 @@ void CONTROL_StopProcess()
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }
 //------------------------------------------
+
+void CONTROL_ExternalInterruptProcess()
+{
+	if (CONTROL_State == DS_ConfigReady)
+	{
+		CONTROL_SetDeviceState(DS_InProcess, SS_Pulse);
+
+		CONTROL_StartProcess();
+	}
+}
+//------------------------------------------
+
+void CONTROL_StartProcess()
+{
+	TIM_Reset(TIM15);
+	TIM_Start(TIM15);
+}
+//-----------------------------------------------
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {

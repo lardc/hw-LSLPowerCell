@@ -43,5 +43,6 @@ void CONTROL_Init();
 void CONTROL_Idle();
 void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_HighPriorityProcess();
+void CONTROL_ExternalInterruptProcess();
 
 #endif // __CONTROLLER_H

@@ -24,8 +24,8 @@
 
 // Регистры
 // Сохраняемые регистры
-#define REG_CURRENT_LEVEL_RANGE0		0	// Верхний порог по току диапазона 0
-#define REG_CURRENT_LEVEL_RANGE1		1	// Верхний порог по току диапазона 1
+#define REG_CURRENT_LEVEL_RANGE0		0	// Верхний порог по току диапазона 0 (А * 10)
+#define REG_CURRENT_LEVEL_RANGE1		1	// Верхний порог по току диапазона 1 (А * 10)
 #define REG_SHUNT_RESISTANCE			2	// Сопротивление шунта (мкОм)
 #define REG_FAN_CTRL					5	// Включение управления вентилятором
 #define REG_AFTER_PULSE_PAUSE			6	// Пауза после импульса (мс)
