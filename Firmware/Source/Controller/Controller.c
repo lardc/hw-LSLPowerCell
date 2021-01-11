@@ -13,11 +13,14 @@
 #include "BCCIxParams.h"
 #include "Measurement.h"
 #include "ConvertUtils.h"
+#include "math.h"
 
 // Definitions
 #define CURRENT_RANGE0		0
 #define CURRENT_RANGE1		1
 #define CURRENT_RANGE2		2
+//
+#define PULSE_BUFFER_SIZE	CURRENT_PULSE_WIDTH / TIMER15_uS
 
 // Types
 //
@@ -39,6 +42,8 @@ volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 volatile MeasureSample SampleParams;
 
 Int16U	CONTROL_CurrentRange = 0;
+Int16U 	CONTROL_CurrentMaxValue = 0;
+Int16U 	CONTROL_PulseDataBuffer[PULSE_BUFFER_SIZE];
 
 /// Forward functions
 //
@@ -57,6 +62,7 @@ bool CONTROL_RegulatorCycle(float SampleCurrent);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 Int16U CONTROL_SetCurrentRange();
+void CONTROL_SineConfig();
 
 // Functions
 //
@@ -283,16 +289,30 @@ Int16U CONTROL_SetCurrentRange()
 }
 //-----------------------------------------------
 
+void CONTROL_SineConfig()
+{
+	float Current;
+
+	Current = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
+	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
+
+	if(Current > CONTROL_CurrentMaxValue)
+		Current = CONTROL_CurrentMaxValue;
+
+	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
+		CONTROL_PulseDataBuffer[i] = Current * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+}
+//-----------------------------------------------
+
 void CONTROL_StopProcess()
 {
-	float AfterPulseCoefficient, CurrentMaxValue;
+	float AfterPulseCoefficient;
 
 	LL_WriteDAC(0);
 	LL_SetStateLineSync(true);
 	TIM_Stop(TIM15);
 
-	CurrentMaxValue = DataTable[REG_CURRENT_PER_CURBOARD] * DataTable[REG_CURBOARD_QUANTITY];
-	AfterPulseCoefficient = (float)DataTable[REG_CURRENT_PULSE_VALUE] / CurrentMaxValue;
+	AfterPulseCoefficient = (float)DataTable[REG_CURRENT_PULSE_VALUE] / CONTROL_CurrentMaxValue;
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
 
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
