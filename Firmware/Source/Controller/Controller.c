@@ -63,6 +63,7 @@ void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 Int16U CONTROL_SetCurrentRange();
 void CONTROL_SineConfig();
+bool CONTROL_BatteryVoltageCheck();
 
 // Functions
 //
@@ -161,7 +162,8 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_SOFTWARE_START:
 			if (CONTROL_State == DS_ConfigReady)
 			{
-				CONTROL_SoftwareStartProcess();
+				CONTROL_SetDeviceState(DS_InProcess, SS_Pulse);
+				CONTROL_StartProcess();
 			}
 			else
 				if (CONTROL_State == DS_InProcess)
@@ -201,29 +203,34 @@ void CONTROL_LogicProcess()
 {
 	static Int64U DelayCounter = 0;
 
-	if(CONTROL_State == DS_InProcess)
+	switch(CONTROL_SubState)
 	{
-		switch(CONTROL_SubState)
-		{
-			case SS_PowerPrepare:
-				CONTROL_BatteryVoltageMeasurement(CONTROL_SubState);
-				break;
-
-			case SS_PulsePrepare:
-				CONTROL_StartPrepare();
-				break;
-
-			case SS_WaitAfterPulse:
+		case SS_PowerPrepare:
+			if(CONTROL_BatteryVoltageCheck())
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
-				break;
+			break;
 
-			case SS_Pulse:
-				break;
+		case SS_PulsePrepare:
+			CONTROL_StartPrepare();
+			break;
 
-			default:
-				break;
-		}
+		case SS_WaitAfterPulse:
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			break;
+
+		default:
+			CONTROL_BatteryVoltageCheck();
+			break;
 	}
+}
+//-----------------------------------------------
+
+bool CONTROL_BatteryVoltageCheck()
+{
+	if(MEASURE_SampleVoltage() < DataTable[REG_BATTERY_VOLTAGE_THRESHOLD])
+		return false;
+	else
+		return true;
 }
 //-----------------------------------------------
 
@@ -231,7 +238,7 @@ void CONTROL_HighPriorityProcess()
 {
 	if(CONTROL_SubState == SS_Pulse)
 	{
-		MEASURE_SampleCurrent(&SampleParams.Current);
+		MEASURE_SampleCurrent(&SampleParams);
 
 		if(CONTROL_RegulatorCycle(SampleParams.Current))
 			CONTROL_StopProcess();
