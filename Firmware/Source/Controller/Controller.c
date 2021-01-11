@@ -14,13 +14,13 @@
 #include "Measurement.h"
 #include "ConvertUtils.h"
 #include "math.h"
+#include "Regulator.h"
 
 // Definitions
 #define CURRENT_RANGE0		0
 #define CURRENT_RANGE1		1
 #define CURRENT_RANGE2		2
 //
-#define PULSE_BUFFER_SIZE	CURRENT_PULSE_WIDTH / TIMER15_uS
 
 // Types
 //
@@ -34,8 +34,8 @@ static Boolean CycleActive = false;
 //
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_AfterPulsePause = 0;
+volatile Int64U	CONTROL_BatteryChargeTimeCounter = 0;
 volatile Int16U CONTROL_Values_Counter = 0;
-volatile Int16U CONTROL_RegulatorErr_Counter = 0;
 volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 //
@@ -44,6 +44,7 @@ volatile MeasureSample SampleParams;
 Int16U	CONTROL_CurrentRange = 0;
 Int16U 	CONTROL_CurrentMaxValue = 0;
 Int16U 	CONTROL_PulseDataBuffer[PULSE_BUFFER_SIZE];
+float 	CurrentTarget = 0;
 
 /// Forward functions
 //
@@ -176,6 +177,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if (CONTROL_State == DS_InProcess)
 			{
 				CONTROL_StopProcess();
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			break;
 
@@ -201,8 +203,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 void CONTROL_LogicProcess()
 {
-	static Int64U DelayCounter = 0;
-
 	switch(CONTROL_SubState)
 	{
 		case SS_PowerPrepare:
@@ -215,7 +215,16 @@ void CONTROL_LogicProcess()
 			break;
 
 		case SS_WaitAfterPulse:
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			if(CONTROL_TimeCounter > CONTROL_AfterPulsePause)
+			{
+				if(CONTROL_BatteryVoltageCheck())
+					CONTROL_SetDeviceState(DS_Ready, SS_None);
+				else
+				{
+					if(CONTROL_TimeCounter >= CONTROL_BatteryChargeTimeCounter)
+						CONTROL_SwitchToFault(PROBLEM_BATTERY);
+				}
+			}
 			break;
 
 		default:
@@ -243,14 +252,17 @@ void CONTROL_HighPriorityProcess()
 		MEASURE_SampleCurrent(&SampleParams);
 
 		if(CONTROL_RegulatorCycle(SampleParams.Current))
+		{
 			CONTROL_StopProcess();
+			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
+		}
 	}
 }
 //-----------------------------------------------
 
 bool CONTROL_RegulatorCycle(float SampleCurrent)
 {
-
+	return REGULATOR_Process(SampleCurrent);
 }
 //-----------------------------------------------
 
@@ -267,13 +279,7 @@ void CONTROL_StartPrepare()
 
 void CONTROL_CashVariables()
 {
-	// Кеширование коэффициентов регулятора
-	for(int i = 0; i < MEASURE_CURRENT_RANGE_QUANTITY; i++)
-	{
-		RegulatorParams[i].Kp = DataTable[REG_REGULATOR_RANGE0_Kp + i * 2];
-		RegulatorParams[i].Ki = DataTable[REG_REGULATOR_RANGE0_Ki + i * 2];
-	}
-
+	REGULATOR_CashVariables();
 	CONTROL_CurrentRange = CONTROL_SetCurrentRange();
 }
 //-----------------------------------------------
@@ -300,16 +306,14 @@ Int16U CONTROL_SetCurrentRange()
 
 void CONTROL_SineConfig()
 {
-	float Current;
-
-	Current = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
+	CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
 	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
 
-	if(Current > CONTROL_CurrentMaxValue)
-		Current = CONTROL_CurrentMaxValue;
+	if(CurrentTarget > CONTROL_CurrentMaxValue)
+		CurrentTarget = CONTROL_CurrentMaxValue;
 
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
-		CONTROL_PulseDataBuffer[i] = Current * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+		CONTROL_PulseDataBuffer[i] = CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
 }
 //-----------------------------------------------
 
@@ -323,8 +327,7 @@ void CONTROL_StopProcess()
 
 	AfterPulseCoefficient = (float)DataTable[REG_CURRENT_PULSE_VALUE] / CONTROL_CurrentMaxValue;
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
-
-	CONTROL_SetDeviceState(DS_Ready, SS_None);
+	CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_RECHARGE_TIMEOUT];
 }
 //------------------------------------------
 
@@ -341,6 +344,7 @@ void CONTROL_ExternalInterruptProcess()
 
 void CONTROL_StartProcess()
 {
+	LL_SetStateLineSync(false);
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);
 }
