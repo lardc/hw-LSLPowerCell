@@ -31,13 +31,13 @@ void USB_LP_CAN_RX0_IRQHandler()
 }
 //-----------------------------------------
 
-void TIM6_DAC_IRQHandler()
+void TIM15_IRQHandler()
 {
-	if(TIM_StatusCheck(TIM6))
+	if(TIM_StatusCheck(TIM15))
 	{
 		CONTROL_HighPriorityProcess();
 
-		TIM_StatusClear(TIM6);
+		TIM_StatusClear(TIM15);
 	}
 }
 //-----------------------------------------
