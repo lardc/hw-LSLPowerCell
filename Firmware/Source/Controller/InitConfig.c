@@ -12,7 +12,7 @@ Boolean INITCFG_ConfigSystemClock()
 }
 //------------------------------------------------
 
-void INITCFG_DAC()
+void INITCFG_ConfigDAC()
 {
 	DACx_Clk_Enable(DAC_1_ClkEN);
 	DACx_Reset();
