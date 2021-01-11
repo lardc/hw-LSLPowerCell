@@ -27,7 +27,9 @@
 #define REG_CURRENT_LEVEL_RANGE0		0	// Верхний порог по току диапазона 0 (А * 10)
 #define REG_CURRENT_LEVEL_RANGE1		1	// Верхний порог по току диапазона 1 (А * 10)
 #define REG_BATTERY_VOLTAGE_THRESHOLD	2	// Порог заряда батареи конденсаторов (В * 10)
+#define REG_BATTERY_RECHARGE_TIMEOUT	2	// Время таймаута дозаряда после импульса (мс)
 #define REG_SHUNT_RESISTANCE			2	// Сопротивление шунта (мкОм)
+#define REG_REGULATOR_QI_MAX			2	// Ограничение уровня интегральной составляющей
 #define REG_FAN_CTRL					5	// Включение управления вентилятором
 #define REG_AFTER_PULSE_PAUSE			6	// Пауза после импульса (мс)
 #define REG_CURRENT_PER_CURBOARD		3	// Максимальная амплитуда тока с одной CurrentBoard (А * 10)
@@ -105,7 +107,7 @@
 
 // Problem
 #define PROBLEM_NONE					0
-#define PROBLEM_FOLOWING_ERROR			1
+#define PROBLEM_BATTERY					1
 
 //  Warning
 #define WARNING_NONE					0

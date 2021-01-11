@@ -14,7 +14,6 @@ typedef struct __MeasureSample
 // Definitions
 #define PULSE_ARR_MAX_LENGTH					300				// Количество точек оцифровки
 //
-#define MEASURE_CURRENT_RANGE_QUANTITY			3
 #define MEASURE_CURRENT_RANGE_0					0
 #define MEASURE_CURRENT_RANGE_1					1
 #define MEASURE_CURRENT_RANGE_2					2

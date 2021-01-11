@@ -21,8 +21,8 @@ typedef struct __ConvertParams
 
 // Variables
 ConvertParams AdcToVoltageParams;
-ConvertParams AdcToCurrentParams[MEASURE_CURRENT_RANGE_QUANTITY];
-ConvertParams CurrentToDacParams[MEASURE_CURRENT_RANGE_QUANTITY];
+ConvertParams AdcToCurrentParams[CURRENT_RANGE_QUANTITY];
+ConvertParams CurrentToDacParams[CURRENT_RANGE_QUANTITY];
 //
 
 // Functions prototypes
