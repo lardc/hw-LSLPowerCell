@@ -31,6 +31,14 @@ void USB_LP_CAN_RX0_IRQHandler()
 }
 //-----------------------------------------
 
+void EXTI4_IRQHandler(void)
+{
+	CONTROL_ExternalInterruptProcess();
+
+	EXTI_FlagReset(EXTI_4);
+}
+//-----------------------------------------------
+
 void TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))

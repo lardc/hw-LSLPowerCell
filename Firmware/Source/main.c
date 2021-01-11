@@ -41,6 +41,9 @@ int main()
 	// Настройка сторожевого таймера
 	INITCFG_ConfigWatchDog();
 	
+	// Настройка внешнего прерывания
+	INITCFG_ConfigExtInterrupt();
+
 	// Инициализация логики контроллера
 	CONTROL_Init();
 	

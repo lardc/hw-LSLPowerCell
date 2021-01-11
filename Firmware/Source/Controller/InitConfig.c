@@ -82,6 +82,7 @@ void INITCFG_ConfigTimer6()
 {
 	TIM_Clock_En(TIM_6);
 	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
+	TIM_Start(TIM6);
 }
 //------------------------------------------------
 
@@ -134,5 +135,12 @@ void INITCFG_ConfigDMA()
 							DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);
 	DMAChannelX_DataConfig(DMA_ADC_CURRENT_CHANNEL, (uint32_t)(&MEASURE_ADC_CurrentRaw[0]), (uint32_t)(&ADC3->DR), ADC_DMA_BUFF_SIZE);
 	DMA_ChannelEnable(DMA_ADC_CURRENT_CHANNEL, true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigExtInterrupt()
+{
+	EXTI_Config(EXTI_PB, EXTI_4, FALL_TRIG, 0);
+	EXTI_EnableInterrupt(EXTI4_IRQn, 0, true);
 }
 //------------------------------------------------
