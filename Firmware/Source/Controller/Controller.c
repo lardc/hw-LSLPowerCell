@@ -56,7 +56,7 @@ void CONTROL_SaveTestResult(bool ExcessCurrent, Int16U Problem);
 bool CONTROL_RegulatorCycle(float SampleCurrent);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
-Int16U CONTROL_GetCurrentRange();
+Int16U CONTROL_SetCurrentRange();
 
 // Functions
 //
@@ -259,18 +259,27 @@ void CONTROL_CashVariables()
 		RegulatorParams[i].Ki = DataTable[REG_REGULATOR_RANGE0_Ki + i * 2];
 	}
 
-	CONTROL_CurrentRange = CONTROL_GetCurrentRange();
+	CONTROL_CurrentRange = CONTROL_SetCurrentRange();
 }
 //-----------------------------------------------
 
-Int16U CONTROL_GetCurrentRange()
+Int16U CONTROL_SetCurrentRange()
 {
 	if(DataTable[REG_CURRENT_PULSE_VALUE] <= DataTable[REG_CURRENT_LEVEL_RANGE0])
+	{
+		LL_SetCurrentRange0();
 		return CURRENT_RANGE0;
+	}
 	else if(DataTable[REG_CURRENT_PULSE_VALUE] <= DataTable[REG_CURRENT_LEVEL_RANGE1])
+	{
+		LL_SetCurrentRange1();
 		return CURRENT_RANGE1;
+	}
 	else
+	{
+		LL_SetCurrentRange2();
 		return CURRENT_RANGE2;
+	}
 }
 //-----------------------------------------------
 
