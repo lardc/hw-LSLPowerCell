@@ -227,7 +227,9 @@ void CONTROL_LogicProcess()
 
 bool CONTROL_BatteryVoltageCheck()
 {
-	if(MEASURE_SampleVoltage() < DataTable[REG_BATTERY_VOLTAGE_THRESHOLD])
+	DataTable[REG_BATTERY_VOLTAGE] = (Int16U)(MEASURE_SampleVoltage() * 10);
+
+	if(DataTable[REG_BATTERY_VOLTAGE] < DataTable[REG_BATTERY_VOLTAGE_THRESHOLD])
 		return false;
 	else
 		return true;
