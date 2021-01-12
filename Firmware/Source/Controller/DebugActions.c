@@ -8,37 +8,23 @@
 #include "Delay.h"
 #include "Controller.h"
 #include "DataTable.h"
-
-// Definitions
-//
-#define DBG_CURRENT_RANGE_0		0
-#define DBG_CURRENT_RANGE_1		1
-#define DBG_CURRENT_RANGE_2		2
-#define DBG_CURRENT_RANGE_3		3
+#include "Controller.h"
 
 // Functions
 //
-void DBGACT_GenerateImpulseToLineSync()
-{
-	LL_SetStateLineSync(true);
-	CONTROL_DelayMs(10);
-	LL_SetStateLineSync(false);
-}
-//-----------------------------
-
 void DBGACT_SetCurrentRange(uint16_t Range)
 {
 	switch(Range)
 	{
-		case DBG_CURRENT_RANGE_0:
+		case CURRENT_RANGE_0:
 			LL_SetCurrentRange0();
 			break;
 
-		case DBG_CURRENT_RANGE_1:
+		case CURRENT_RANGE_1:
 			LL_SetCurrentRange1();
 			break;
 
-		case DBG_CURRENT_RANGE_2:
+		case CURRENT_RANGE_2:
 			LL_SetCurrentRange2();
 			break;
 	}
@@ -48,5 +34,25 @@ void DBGACT_SetCurrentRange(uint16_t Range)
 void DBGACT_PowerSupplyEnable(bool State)
 {
 	LL_PowerSupplyEnable(State);
+}
+//-----------------------------
+
+void DBGACT_FanControl(bool State)
+{
+	LL_FanEnable(State);
+}
+//-----------------------------
+
+void DBGACT_PulseProcess(Int16U DACValue)
+{
+	if(DACValue > DAC_MAX_VAL)
+		DACValue = DAC_MAX_VAL;
+
+	RegulatorParams.DebugMode = true;
+	RegulatorParams.CurrentTarget = DACValue;
+	CONTROL_SineConfig(&RegulatorParams);
+
+	CONTROL_SetDeviceState(DS_None, SS_Pulse);
+	CONTROL_StartProcess();
 }
 //-----------------------------

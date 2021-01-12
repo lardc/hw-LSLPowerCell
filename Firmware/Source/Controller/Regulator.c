@@ -30,12 +30,16 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	RegulatorOutput = Regulator->CurrentTable[RegulatorPulseCounter] + Qp +Qi;
 
-	LL_WriteDAC(CU_ItoDAC(RegulatorOutput, Regulator->CurrentRange));
+	if(RegulatorParams.DebugMode)
+		LL_WriteDAC(Regulator->CurrentTable[RegulatorPulseCounter]);
+	else
+		LL_WriteDAC(CU_ItoDAC(RegulatorOutput, Regulator->CurrentRange));
 
 	RegulatorPulseCounter++;
 
 	if(RegulatorPulseCounter >= PULSE_BUFFER_SIZE)
 	{
+		RegulatorParams.DebugMode = false;
 		RegulatorPulseCounter = 0;
 		return true;
 	}
@@ -52,6 +56,8 @@ void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
 		Regulator->Kp[i] = DataTable[REG_REGULATOR_RANGE0_Kp + i * 2];
 		Regulator->Ki[i] = DataTable[REG_REGULATOR_RANGE0_Ki + i * 2];
 	}
+
+	Regulator->DebugMode = false;
 }
 //-----------------------------------------------
 

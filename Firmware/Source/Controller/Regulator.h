@@ -21,6 +21,7 @@ typedef struct __RegulatorParams
 	float CurrentTable[PULSE_BUFFER_SIZE];
 	float Kp[CURRENT_RANGE_QUANTITY];
 	float Ki[CURRENT_RANGE_QUANTITY];
+	bool DebugMode;
 }RegulatorParamsStruct;
 
 // Functions

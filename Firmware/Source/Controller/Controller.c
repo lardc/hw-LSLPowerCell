@@ -11,7 +11,6 @@
 #include "DebugActions.h"
 #include "Diagnostic.h"
 #include "BCCIxParams.h"
-#include "Regulator.h"
 #include "Measurement.h"
 #include "math.h"
 
@@ -29,32 +28,26 @@ volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_AfterPulsePause = 0;
 volatile Int64U	CONTROL_BatteryChargeTimeCounter = 0;
 volatile Int16U CONTROL_Values_Counter = 0;
-volatile Int16U CONTROL_RegulatorErr_Counter = 0;
 volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 //
-Int16U	CONTROL_CurrentRange = 0;
 float 	CONTROL_CurrentMaxValue = 0;
-Int16U 	CONTROL_PulseDataBuffer[PULSE_BUFFER_SIZE];
 //
 volatile RegulatorParamsStruct RegulatorParams;
 
 /// Forward functions
 //
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
-void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
-void CONTROL_StartProcess();
 void CONTROL_ResetOutputRegisters();
 bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
-void CONTROL_SineConfig();
 bool CONTROL_BatteryVoltageCheck();
 
 // Functions
@@ -64,7 +57,7 @@ void CONTROL_Init()
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_REGULATOR_ERR};
 	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE};
-	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_RegulatorErr_Counter};
+	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
 	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_RegulatorErr};
 
 	// Конфигурация сервиса работы Data-table и EPROM
@@ -277,7 +270,7 @@ void CONTROL_StartPrepare()
 	CU_LoadConvertParams();
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
-	CONTROL_SineConfig();
+	CONTROL_SineConfig(&RegulatorParams);
 
 	MEASURE_SetCurrentRange(&RegulatorParams);
 
@@ -295,10 +288,10 @@ void CONTROL_CashVariables()
 }
 //-----------------------------------------------
 
-void CONTROL_SineConfig()
+void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 {
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
-		RegulatorParams.CurrentTable[i] = RegulatorParams.CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+		Regulator->CurrentTable[i] = Regulator->CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
 }
 //-----------------------------------------------
 

@@ -5,9 +5,6 @@
 #include "DataTable.h"
 #include "Global.h"
 
-// Definitions
-#define DAC_MAX_VAL		0x0FFF
-
 // Structs
 typedef struct __ConvertParams
 {

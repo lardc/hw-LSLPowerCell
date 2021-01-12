@@ -7,9 +7,10 @@
 #define ACT_CLR_FAULT					3	// Очистка всех fault
 #define ACT_CLR_WARNING					4	// Очистка всех warning
 
-#define ACT_DBG_PULSE_SYNC				50	// Одиночный импусль в линию SYNC_1
-#define ACT_DBG_SET_CURRENT_RANGE		51	// Установка диапазона по току (0, 1, 2)
-#define ACT_DBG_POWER_SUPPLY_EN			52	// Проверка активности источников питания на 500В
+#define ACT_DBG_POWER_SUPPLY_CTRL		50	// Проверка работы SCRelayBoard
+#define ACT_DBG_PULSE					51	// Формирование управляющего импульса на затворах транзисторов
+#define ACT_DBG_SET_CURRENT_RANGE		52	// Установка диапазона по току (0, 1, 2)
+#define ACT_DBG_FAN_CTRL				53	// Проверка работы вентилятора
 
 #define ACT_CONFIG_UNIT					100	// Конфигурация блока
 #define ACT_SOFTWARE_START				101	// Старт измерения
@@ -27,6 +28,7 @@
 #define REG_CURRENT_LEVEL_RANGE0		0	// Верхний порог по току диапазона 0 (А * 10)
 #define REG_CURRENT_LEVEL_RANGE1		1	// Верхний порог по току диапазона 1 (А * 10)
 #define REG_BATTERY_VOLTAGE_THRESHOLD	2	// Порог заряда батареи конденсаторов (В * 10)
+#define REG_DAC_OUTPUT_LIMIT_VALUE		2	// Ограничение выхода ЦАП (0 - 4095)
 #define REG_BATTERY_FULL_CHRAGE_TIMEOUT	2	// Время таймаута полного заряда конденсаторов (мс)
 #define REG_BATTERY_RECHARGE_TIMEOUT	2	// Время таймаута дозаряда после импульса (мс)
 #define REG_SHUNT_RESISTANCE			2	// Сопротивление шунта (мкОм)
