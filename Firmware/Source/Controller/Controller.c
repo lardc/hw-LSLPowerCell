@@ -236,7 +236,7 @@ void CONTROL_LogicProcess()
 
 bool CONTROL_BatteryVoltageCheck()
 {
-	DataTable[REG_BATTERY_VOLTAGE] = (Int16U)(MEASURE_SampleVoltage() * 10);
+	DataTable[REG_BATTERY_VOLTAGE] = (Int16U)(MEASURE_SingleSampleBatteryVoltage() * 10);
 
 	if(DataTable[REG_BATTERY_VOLTAGE] < DataTable[REG_BATTERY_VOLTAGE_THRESHOLD])
 		return false;
@@ -249,7 +249,7 @@ void CONTROL_HighPriorityProcess()
 {
 	if(CONTROL_SubState == SS_Pulse)
 	{
-		MEASURE_SampleCurrent(&RegulatorParams);
+		MEASURE_SampleParams(&RegulatorParams);
 
 		if(CONTROL_RegulatorCycle(&RegulatorParams))
 		{

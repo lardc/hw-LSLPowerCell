@@ -16,8 +16,8 @@ extern Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
 extern Int16U MEASURE_ADC_BatteryVoltageRaw[ADC_DMA_BUFF_SIZE];
 
 // Functions
-float MEASURE_SampleVoltage();
-void MEASURE_SampleCurrent(volatile RegulatorParamsStruct* Regulator);
+float MEASURE_SingleSampleBatteryVoltage();
+void MEASURE_SampleParams(volatile RegulatorParamsStruct* Regulator);
 void MEASURE_DMABufferClear();
 void MEASURE_SetCurrentRange(volatile RegulatorParamsStruct* Regulator);
 

@@ -13,19 +13,21 @@ Int16U MEASURE_ADC_BatteryVoltageRaw[ADC_DMA_BUFF_SIZE];
 // Functions prototypes
 Int16U MEASURE_DMAExtractX(Int16U* InputArray, Int16U ArraySize);
 Int16U MEASURE_DMAExtractCurrent();
+Int16U MEASURE_DMAExtractVolatge();
 void MEASURE_StartNewSampling();
 
 // Functions
 //
-float MEASURE_SampleVoltage()
+float MEASURE_SingleSampleBatteryVoltage()
 {
 	return CU_ADCtoV(ADC_Measure(ADC1, ADC1_V_BAT_CHANNEL));
 }
 //-----------------------------------------------
 
-void MEASURE_SampleCurrent(volatile RegulatorParamsStruct* Regulator)
+void MEASURE_SampleParams(volatile RegulatorParamsStruct* Regulator)
 {
 	Regulator->MeasuredCurrent =  CU_ADCtoI(MEASURE_DMAExtractCurrent(), Regulator->CurrentRange);
+	Regulator->MeasuredBatteryVoltage =  CU_ADCtoV(MEASURE_DMAExtractVolatge());
 	MEASURE_StartNewSampling();
 }
 //-----------------------------------------------
@@ -47,6 +49,12 @@ Int16U MEASURE_DMAExtractCurrent()
 }
 //-----------------------------------------------
 
+Int16U MEASURE_DMAExtractVolatge()
+{
+	return MEASURE_DMAExtractX(&MEASURE_ADC_BatteryVoltageRaw[1], ADC_DMA_BUFF_SIZE - 1);
+}
+//-----------------------------------------------
+
 void MEASURE_DMABufferClear()
 {
 	for(int i = 0; i < ADC_DMA_BUFF_SIZE; i++)
@@ -56,7 +64,9 @@ void MEASURE_DMABufferClear()
 
 void MEASURE_StartNewSampling()
 {
+	DMA_TransferCompleteReset(DMA1, DMA_TRANSFER_COMPLETE);
 	DMA_TransferCompleteReset(DMA2, DMA_TRANSFER_COMPLETE);
+	ADC_SamplingStart(ADC1);
 	ADC_SamplingStart(ADC3);
 }
 //-----------------------------------------------
