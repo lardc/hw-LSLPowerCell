@@ -1,14 +1,17 @@
 // Includes
 #include "Measurement.h"
-#include "ConvertUtils.h"
 #include "Board.h"
-#include "Global.h"
 #include "LowLevel.h"
 #include "DataTable.h"
+#include "Global.h"
+
+// Structs
+//
+MeasureSample SampleParams;
 
 // Variables
+//
 Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
-Int16U MEASURE_CurrentRange = 0;
 
 // Functions prototypes
 Int16U MEASURE_DMAExtractX(Int16U* InputArray, Int16U ArraySize);
@@ -23,9 +26,9 @@ float MEASURE_SampleVoltage()
 }
 //-----------------------------------------------
 
-void MEASURE_SampleCurrent(volatile MeasureSample* Sample)
+void MEASURE_SampleCurrent()
 {
-	Sample->Current =  CU_ADCtoI(MEASURE_DMAExtractCurrent(), MEASURE_CurrentRange);
+	SampleParams.Current =  CU_ADCtoI(MEASURE_DMAExtractCurrent(), SampleParams.CurrentRange);
 	MEASURE_StartNewSampling();
 }
 //-----------------------------------------------
@@ -65,17 +68,17 @@ void MEASURE_SetCurrentRange(float Current)
 {
 	if(Current <= DataTable[REG_CURRENT_LEVEL_RANGE0])
 	{
-		MEASURE_CurrentRange = MEASURE_CURRENT_RANGE_0;
+		SampleParams.CurrentRange = CURRENT_RANGE_0;
 		LL_SetCurrentRange0();
 	}
 	else if(Current <= DataTable[REG_CURRENT_LEVEL_RANGE1])
 	{
-		MEASURE_CurrentRange = MEASURE_CURRENT_RANGE_1;
+		SampleParams.CurrentRange = CURRENT_RANGE_0;
 		LL_SetCurrentRange1();
 	}
 	else
 	{
-		MEASURE_CurrentRange = MEASURE_CURRENT_RANGE_2;
+		SampleParams.CurrentRange = CURRENT_RANGE_0;
 		LL_SetCurrentRange2();
 	}
 

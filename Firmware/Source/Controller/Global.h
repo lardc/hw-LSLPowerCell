@@ -10,7 +10,10 @@
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 #define CURRENT_PULSE_WIDTH						10000	// Длительность импульса тока (мкс)
 #define PI										3.1416f	// Значение числа Пи
-#define CURRENT_RANGE_QUANTITY					3		// Количество диапазонов измерения тока
+#define	CURRENT_RANGE_QUANTITY					3		// Количество диапазонов измерения тока
+#define CURRENT_RANGE_0							0		// Диапазон 0
+#define CURRENT_RANGE_1							1		// Диапазон 1
+#define CURRENT_RANGE_2							2		// Диапазон 2
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)

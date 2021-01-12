@@ -4,28 +4,32 @@
 // Includes
 #include "SysConfig.h"
 #include "ZwBase.h"
+#include "ConvertUtils.h"
 
+// Structs
+//
 typedef struct __MeasureSample
 {
+	Int16U CurrentRange;
+	float CurrentTarget;
 	float Current;
 	float Voltage;
 }MeasureSample;
 
+extern MeasureSample SampleParams;
+
 // Definitions
 #define PULSE_ARR_MAX_LENGTH					300				// Количество точек оцифровки
 //
-#define MEASURE_CURRENT_RANGE_0					0
-#define MEASURE_CURRENT_RANGE_1					1
-#define MEASURE_CURRENT_RANGE_2					2
 
 // Variables
 extern Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
 
 // Functions
 float MEASURE_SampleVoltage();
-void MEASURE_SampleCurrent(volatile MeasureSample* Sample);
+void MEASURE_SampleCurrent();
 void MEASURE_SampleParams(volatile MeasureSample* Sample);
-void MEASURE_DMABuffersClear();
+void MEASURE_DMABufferClear();
 void MEASURE_SetCurrentRange(float Current);
 
 #endif /* MEASUREMENT_H_ */

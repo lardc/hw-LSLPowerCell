@@ -1,10 +1,9 @@
 // Includes
 //
 #include "ConvertUtils.h"
-#include "Global.h"
 #include "LowLevel.h"
 #include "DataTable.h"
-#include "Measurement.h"
+#include "Global.h"
 
 // Definitions
 #define DAC_MAX_VAL		0x0FFF
@@ -78,7 +77,7 @@ void CU_LoadConvertParams()
 	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_K];
 
 	// Параметры преобразования значения АЦП в ток и тока в ЦАП
-	for(int i = 0; i < MEASURE_CURRENT_RANGE_QUANTITY; i++)
+	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
 	{
 		AdcToCurrentParams[i].P2 = (float)DataTable[REG_ADC_I_RANGE0_P2 + i * 6] / 1e-6;
 		AdcToCurrentParams[i].P1 = (float)DataTable[REG_ADC_I_RANGE0_P1 + i * 6] / 1000;
