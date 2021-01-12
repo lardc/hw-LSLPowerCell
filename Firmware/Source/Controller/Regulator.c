@@ -5,18 +5,18 @@
 #include "LowLevel.h"
 #include "ConvertUtils.h"
 
-// Variables
+// Functions prototypes
 //
-Int16U	RegulatorPulseCounter;
+void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator);
 
 // Functions
 //
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 {
-	float RegulatorError, Qp, RegulatorOutput;
+	float RegulatorError, Qp;
 	static float Qi = 0;
 
-	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[RegulatorPulseCounter] - Regulator->MeasuredCurrent);
+	RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[Regulator->RegulatorPulseCounter] - Regulator->MeasuredCurrent);
 
 	Qi += RegulatorError * Regulator->Ki[Regulator->CurrentRange];
 
@@ -28,23 +28,57 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	Qp = RegulatorError * Regulator->Kp[Regulator->CurrentRange];
 
-	RegulatorOutput = Regulator->CurrentTable[RegulatorPulseCounter] + Qp +Qi;
+	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp +Qi;
 
-	if(RegulatorParams.DebugMode)
-		LL_WriteDAC(Regulator->CurrentTable[RegulatorPulseCounter]);
+	if(Regulator->DebugMode)
+		LL_WriteDAC(Regulator->CurrentTable[Regulator->RegulatorPulseCounter]);
 	else
-		LL_WriteDAC(CU_ItoDAC(RegulatorOutput, Regulator->CurrentRange));
+		LL_WriteDAC(CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange));
 
-	RegulatorPulseCounter++;
+	REGULATOR_LoggingData(Regulator);
 
-	if(RegulatorPulseCounter >= PULSE_BUFFER_SIZE)
+	Regulator->RegulatorPulseCounter++;
+
+	if(Regulator->RegulatorPulseCounter >= PULSE_BUFFER_SIZE)
 	{
-		RegulatorParams.DebugMode = false;
-		RegulatorPulseCounter = 0;
+		Regulator->DebugMode = false;
+		Regulator->RegulatorPulseCounter = 0;
 		return true;
 	}
 	else
 		return false;
+}
+//-----------------------------------------------
+
+void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
+{
+	static Int16U ScopeLogStep = 0, LocalCounter = 0;
+
+	// —брос локального счетчика в начале логгировани€
+	if (CONTROL_Values_Counter == 0)
+		LocalCounter = 0;
+
+	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
+	{
+		ScopeLogStep = 0;
+
+		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Regulator->MeasuredCurrent * 10);
+		CONTROL_RegulatorErr[LocalCounter] = (Int16U)(Regulator->RegulatorError * 10);
+		CONTROL_RegulatorOutput[LocalCounter] = (Int16U)(Regulator->RegulatorOutput * 10);
+		CONTROL_ValuesBatteryVoltage[LocalCounter] = (Int16U)(Regulator->MeasuredBatteryVoltage * 10);
+
+		CONTROL_Values_Counter = LocalCounter;
+
+		++LocalCounter;
+	}
+
+	// ”словие обновлени€ глобального счетчика данных
+	if (CONTROL_Values_Counter < VALUES_x_SIZE)
+		CONTROL_Values_Counter = LocalCounter;
+
+	// —брос локального счетчика
+	if (LocalCounter >= VALUES_x_SIZE)
+		LocalCounter = 0;
 }
 //-----------------------------------------------
 

@@ -37,6 +37,7 @@
 #define REG_AFTER_PULSE_PAUSE			6	// Пауза после импульса (мс)
 #define REG_CURRENT_PER_CURBOARD		3	// Максимальная амплитуда тока с одной CurrentBoard (А * 10)
 #define REG_CURBOARD_QUANTITY			4	// Количество CurrentBoard
+#define REG_SCOPE_STEP					5	// Шаг сохранения оцифрованных значений
 // 5 - 9
 #define REG_I_TO_DAC_RANGE0_K			2	// Диапазон 0 - Коэффициент пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE0_B			3	// Диапазон 0 - Смещение пересчета в значение ЦАП
@@ -125,6 +126,8 @@
 
 // Endpoints
 #define EP_CURRENT						1
-#define EP_REGULATOR_ERR				2
+#define	EP_BATTERY_VOLTAGE				2
+#define EP_REGULATOR_OUTPUT				3
+#define EP_REGULATOR_ERR				4
 
 #endif //  __DEV_OBJ_DIC_H

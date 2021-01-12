@@ -13,6 +13,7 @@
 
 // Variables
 extern Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
+extern Int16U MEASURE_ADC_BatteryVoltageRaw[ADC_DMA_BUFF_SIZE];
 
 // Functions
 float MEASURE_SampleVoltage();

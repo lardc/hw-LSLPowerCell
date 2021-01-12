@@ -8,6 +8,7 @@
 // Variables
 //
 Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
+Int16U MEASURE_ADC_BatteryVoltageRaw[ADC_DMA_BUFF_SIZE];
 
 // Functions prototypes
 Int16U MEASURE_DMAExtractX(Int16U* InputArray, Int16U ArraySize);
