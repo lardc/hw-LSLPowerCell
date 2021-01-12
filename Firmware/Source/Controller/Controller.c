@@ -11,16 +11,8 @@
 #include "DebugActions.h"
 #include "Diagnostic.h"
 #include "BCCIxParams.h"
-#include "Measurement.h"
-#include "ConvertUtils.h"
-#include "math.h"
 #include "Regulator.h"
-
-// Definitions
-#define CURRENT_RANGE0		0
-#define CURRENT_RANGE1		1
-#define CURRENT_RANGE2		2
-//
+#include "math.h"
 
 // Types
 //
@@ -36,10 +28,10 @@ volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_AfterPulsePause = 0;
 volatile Int64U	CONTROL_BatteryChargeTimeCounter = 0;
 volatile Int16U CONTROL_Values_Counter = 0;
+volatile Int16U CONTROL_RegulatorErr_Counter = 0;
 volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 //
-volatile MeasureSample SampleParams;
 
 Int16U	CONTROL_CurrentRange = 0;
 Int16U 	CONTROL_CurrentMaxValue = 0;
@@ -59,10 +51,9 @@ void CONTROL_StopProcess();
 void CONTROL_StartProcess();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_SaveTestResult(bool ExcessCurrent, Int16U Problem);
-bool CONTROL_RegulatorCycle(float SampleCurrent);
+bool CONTROL_RegulatorCycle(MeasureSample* RegulatorParams);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
-Int16U CONTROL_SetCurrentRange();
 void CONTROL_SineConfig();
 bool CONTROL_BatteryVoltageCheck();
 
@@ -133,7 +124,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
+			{
+				CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_FULL_CHRAGE_TIMEOUT];
 				CONTROL_SetDeviceState(DS_InProcess, SS_PowerPrepare);
+			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -208,6 +202,14 @@ void CONTROL_LogicProcess()
 		case SS_PowerPrepare:
 			if(CONTROL_BatteryVoltageCheck())
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			else
+			{
+				if(CONTROL_TimeCounter >= CONTROL_BatteryChargeTimeCounter)
+				{
+					CONTROL_ResetToDefaultState();
+					CONTROL_SwitchToFault(PROBLEM_BATTERY);
+				}
+			}
 			break;
 
 		case SS_PulsePrepare:
@@ -222,7 +224,10 @@ void CONTROL_LogicProcess()
 				else
 				{
 					if(CONTROL_TimeCounter >= CONTROL_BatteryChargeTimeCounter)
+					{
+						CONTROL_ResetToDefaultState();
 						CONTROL_SwitchToFault(PROBLEM_BATTERY);
+					}
 				}
 			}
 			break;
@@ -251,7 +256,7 @@ void CONTROL_HighPriorityProcess()
 	{
 		MEASURE_SampleCurrent(&SampleParams);
 
-		if(CONTROL_RegulatorCycle(SampleParams.Current))
+		if(CONTROL_RegulatorCycle(&SampleParams))
 		{
 			CONTROL_StopProcess();
 			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
@@ -260,18 +265,20 @@ void CONTROL_HighPriorityProcess()
 }
 //-----------------------------------------------
 
-bool CONTROL_RegulatorCycle(float SampleCurrent)
+bool CONTROL_RegulatorCycle(MeasureSample* Sample)
 {
-	return REGULATOR_Process(SampleCurrent);
+	return REGULATOR_Process(Sample);
 }
 //-----------------------------------------------
 
 void CONTROL_StartPrepare()
 {
-	MEASURE_DMABuffersClear();
+	MEASURE_DMABufferClear();
 	CU_LoadConvertParams();
 	CONTROL_CashVariables();
 	CONTROL_SineConfig();
+
+	MEASURE_SetCurrentRange(SampleParams.CurrentTarget);
 
 	CONTROL_SetDeviceState(DS_ConfigReady, SS_None);
 }
@@ -280,38 +287,17 @@ void CONTROL_StartPrepare()
 void CONTROL_CashVariables()
 {
 	REGULATOR_CashVariables();
-	CONTROL_CurrentRange = CONTROL_SetCurrentRange();
-}
-//-----------------------------------------------
 
-Int16U CONTROL_SetCurrentRange()
-{
-	if(DataTable[REG_CURRENT_PULSE_VALUE] <= DataTable[REG_CURRENT_LEVEL_RANGE0])
-	{
-		LL_SetCurrentRange0();
-		return CURRENT_RANGE0;
-	}
-	else if(DataTable[REG_CURRENT_PULSE_VALUE] <= DataTable[REG_CURRENT_LEVEL_RANGE1])
-	{
-		LL_SetCurrentRange1();
-		return CURRENT_RANGE1;
-	}
-	else
-	{
-		LL_SetCurrentRange2();
-		return CURRENT_RANGE2;
-	}
+	SampleParams.CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
+
+	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
+	if(SampleParams.CurrentTarget > CONTROL_CurrentMaxValue)
+		SampleParams.CurrentTarget = CONTROL_CurrentMaxValue;
 }
 //-----------------------------------------------
 
 void CONTROL_SineConfig()
 {
-	CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
-	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
-
-	if(CurrentTarget > CONTROL_CurrentMaxValue)
-		CurrentTarget = CONTROL_CurrentMaxValue;
-
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
 		CONTROL_PulseDataBuffer[i] = CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
 }

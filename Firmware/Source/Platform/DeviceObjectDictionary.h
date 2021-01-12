@@ -27,6 +27,7 @@
 #define REG_CURRENT_LEVEL_RANGE0		0	// Верхний порог по току диапазона 0 (А * 10)
 #define REG_CURRENT_LEVEL_RANGE1		1	// Верхний порог по току диапазона 1 (А * 10)
 #define REG_BATTERY_VOLTAGE_THRESHOLD	2	// Порог заряда батареи конденсаторов (В * 10)
+#define REG_BATTERY_FULL_CHRAGE_TIMEOUT	2	// Время таймаута полного заряда конденсаторов (мс)
 #define REG_BATTERY_RECHARGE_TIMEOUT	2	// Время таймаута дозаряда после импульса (мс)
 #define REG_SHUNT_RESISTANCE			2	// Сопротивление шунта (мкОм)
 #define REG_REGULATOR_QI_MAX			2	// Ограничение уровня интегральной составляющей
