@@ -5,10 +5,6 @@
 #include "DataTable.h"
 #include "Global.h"
 
-// Structs
-//
-MeasureSample SampleParams;
-
 // Variables
 //
 Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
@@ -26,9 +22,9 @@ float MEASURE_SampleVoltage()
 }
 //-----------------------------------------------
 
-void MEASURE_SampleCurrent()
+void MEASURE_SampleCurrent(volatile RegulatorParamsStruct* Regulator)
 {
-	SampleParams.Current =  CU_ADCtoI(MEASURE_DMAExtractCurrent(), SampleParams.CurrentRange);
+	Regulator->MeasuredCurrent =  CU_ADCtoI(MEASURE_DMAExtractCurrent(), Regulator->CurrentRange);
 	MEASURE_StartNewSampling();
 }
 //-----------------------------------------------
@@ -64,21 +60,21 @@ void MEASURE_StartNewSampling()
 }
 //-----------------------------------------------
 
-void MEASURE_SetCurrentRange(float Current)
+void MEASURE_SetCurrentRange(volatile RegulatorParamsStruct* Regulator)
 {
-	if(Current <= DataTable[REG_CURRENT_LEVEL_RANGE0])
+	if(Regulator->MeasuredCurrent <= DataTable[REG_CURRENT_LEVEL_RANGE0])
 	{
-		SampleParams.CurrentRange = CURRENT_RANGE_0;
+		Regulator->CurrentRange = CURRENT_RANGE_0;
 		LL_SetCurrentRange0();
 	}
-	else if(Current <= DataTable[REG_CURRENT_LEVEL_RANGE1])
+	else if(Regulator->MeasuredCurrent <= DataTable[REG_CURRENT_LEVEL_RANGE1])
 	{
-		SampleParams.CurrentRange = CURRENT_RANGE_0;
+		Regulator->CurrentRange = CURRENT_RANGE_0;
 		LL_SetCurrentRange1();
 	}
 	else
 	{
-		SampleParams.CurrentRange = CURRENT_RANGE_0;
+		Regulator->CurrentRange = CURRENT_RANGE_0;
 		LL_SetCurrentRange2();
 	}
 

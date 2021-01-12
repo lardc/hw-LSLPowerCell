@@ -12,6 +12,7 @@
 #include "Diagnostic.h"
 #include "BCCIxParams.h"
 #include "Regulator.h"
+#include "Measurement.h"
 #include "math.h"
 
 // Types
@@ -32,11 +33,11 @@ volatile Int16U CONTROL_RegulatorErr_Counter = 0;
 volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 //
-
 Int16U	CONTROL_CurrentRange = 0;
-Int16U 	CONTROL_CurrentMaxValue = 0;
+float 	CONTROL_CurrentMaxValue = 0;
 Int16U 	CONTROL_PulseDataBuffer[PULSE_BUFFER_SIZE];
-float 	CurrentTarget = 0;
+//
+volatile RegulatorParamsStruct RegulatorParams;
 
 /// Forward functions
 //
@@ -50,8 +51,7 @@ void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
 void CONTROL_StartProcess();
 void CONTROL_ResetOutputRegisters();
-void CONTROL_SaveTestResult(bool ExcessCurrent, Int16U Problem);
-bool CONTROL_RegulatorCycle(MeasureSample* RegulatorParams);
+bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 void CONTROL_SineConfig();
@@ -254,9 +254,9 @@ void CONTROL_HighPriorityProcess()
 {
 	if(CONTROL_SubState == SS_Pulse)
 	{
-		MEASURE_SampleCurrent(&SampleParams);
+		MEASURE_SampleCurrent(&RegulatorParams);
 
-		if(CONTROL_RegulatorCycle(&SampleParams))
+		if(CONTROL_RegulatorCycle(&RegulatorParams))
 		{
 			CONTROL_StopProcess();
 			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
@@ -265,9 +265,9 @@ void CONTROL_HighPriorityProcess()
 }
 //-----------------------------------------------
 
-bool CONTROL_RegulatorCycle(MeasureSample* Sample)
+bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 {
-	return REGULATOR_Process(Sample);
+	return REGULATOR_Process(Regulator);
 }
 //-----------------------------------------------
 
@@ -275,10 +275,11 @@ void CONTROL_StartPrepare()
 {
 	MEASURE_DMABufferClear();
 	CU_LoadConvertParams();
+	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
 	CONTROL_SineConfig();
 
-	MEASURE_SetCurrentRange(SampleParams.CurrentTarget);
+	MEASURE_SetCurrentRange(&RegulatorParams);
 
 	CONTROL_SetDeviceState(DS_ConfigReady, SS_None);
 }
@@ -286,20 +287,18 @@ void CONTROL_StartPrepare()
 
 void CONTROL_CashVariables()
 {
-	REGULATOR_CashVariables();
-
-	SampleParams.CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
+	RegulatorParams.CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
 
 	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
-	if(SampleParams.CurrentTarget > CONTROL_CurrentMaxValue)
-		SampleParams.CurrentTarget = CONTROL_CurrentMaxValue;
+	if(RegulatorParams.CurrentTarget > CONTROL_CurrentMaxValue)
+		RegulatorParams.CurrentTarget = CONTROL_CurrentMaxValue;
 }
 //-----------------------------------------------
 
 void CONTROL_SineConfig()
 {
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
-		CONTROL_PulseDataBuffer[i] = CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+		RegulatorParams.CurrentTable[i] = RegulatorParams.CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
 }
 //-----------------------------------------------
 
