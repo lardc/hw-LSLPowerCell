@@ -38,6 +38,8 @@
 #define REG_CURRENT_PER_CURBOARD		3	// Максимальная амплитуда тока с одной CurrentBoard (А * 10)
 #define REG_CURBOARD_QUANTITY			4	// Количество CurrentBoard
 #define REG_SCOPE_STEP					5	// Шаг сохранения оцифрованных значений
+#define REG_FAN_OPERATE_PERIOD			5	// Период работы вентилятора (сек)
+#define REG_FAN_OPERATE_TIME			5	// Время включенного состояния вентилятора (сек)
 // 5 - 9
 #define REG_I_TO_DAC_RANGE0_K			2	// Диапазон 0 - Коэффициент пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE0_B			3	// Диапазон 0 - Смещение пересчета в значение ЦАП

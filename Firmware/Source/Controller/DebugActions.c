@@ -39,7 +39,7 @@ void DBGACT_PowerSupplyEnable(bool State)
 
 void DBGACT_FanControl(bool State)
 {
-	LL_FanEnable(State);
+	LL_Fan(State);
 }
 //-----------------------------
 

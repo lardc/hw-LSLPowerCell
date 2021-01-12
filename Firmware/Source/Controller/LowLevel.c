@@ -19,7 +19,7 @@ void LL_SetStateLineSync(bool State)
 }
 //-----------------------------
 
-void LL_FanEnable(bool State)
+void LL_Fan(bool State)
 {
 	GPIO_SetState(GPIO_FAN, State);
 }
