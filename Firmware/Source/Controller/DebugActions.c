@@ -54,5 +54,9 @@ void DBGACT_PulseProcess(Int16U DACValue)
 
 	CONTROL_SetDeviceState(DS_None, SS_Pulse);
 	CONTROL_StartProcess();
+
+	CONTROL_DelayMs(20);
+
+	CONTROL_SetDeviceState(DS_None, SS_None);
 }
 //-----------------------------

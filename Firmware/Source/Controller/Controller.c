@@ -296,7 +296,12 @@ void CONTROL_CashVariables()
 void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 {
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
+	{
 		Regulator->CurrentTable[i] = Regulator->CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+
+		if(Regulator->CurrentTable[i] < 0)
+			Regulator->CurrentTable[i] = 0;
+	}
 }
 //-----------------------------------------------
 
