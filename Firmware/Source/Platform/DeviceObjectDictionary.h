@@ -40,7 +40,8 @@
 #define REG_SCOPE_STEP					12	// Шаг сохранения оцифрованных значений
 #define REG_FAN_OPERATE_PERIOD			13	// Период работы вентилятора (сек)
 #define REG_FAN_OPERATE_TIME			14	// Время включенного состояния вентилятора (сек)
-// 15 - 19
+#define REG_DAC_OFFSET					15	// Смещение сигнала с ЦАП
+// 16 - 19
 #define REG_I_TO_DAC_RANGE0_K			20	// Диапазон 0 - Коэффициент пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE0_B			21	// Диапазон 0 - Смещение пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE1_K			22	// Диапазон 1 - Коэффициент пересчета в значение ЦАП

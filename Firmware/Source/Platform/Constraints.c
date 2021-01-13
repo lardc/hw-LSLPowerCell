@@ -23,7 +23,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{0, INT16U_MAX, 0},															// 12
 		{FAN_PERIOD_MIN, FAN_PERIOD_MAX, FAN_PERIOD_DEF},							// 13
 		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},															// 14
-		{0, 0, 0},																	// 15
+		{DAC_OFFSET_MIN, DAC_OFFSET_MAX, DAC_OFFSET_DEF},							// 15
 		{0, 0, 0},																	// 16
 		{0, 0, 0},																	// 17
 		{0, 0, 0},																	// 18

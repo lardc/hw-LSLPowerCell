@@ -26,6 +26,10 @@
 #define DAC_OUTPUT_LIM_MAX			4095
 #define DAC_OUTPUT_LIM_DEF			3500
 //
+#define DAC_OFFSET_MIN				0
+#define DAC_OFFSET_MAX				4095
+#define DAC_OFFSET_DEF				2100
+//
 #define FULL_CHARGE_TIMEOUT_MIN		30000		// мс
 #define FULL_CHARGE_TIMEOUT_MAX		60000		// мс
 #define FULL_CHARGE_TIMEOUT_DEF		50000		// мс

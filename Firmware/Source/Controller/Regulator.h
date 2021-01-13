@@ -26,6 +26,7 @@ typedef struct __RegulatorParams
 	bool DebugMode;
 	Int16U RegulatorPulseCounter;
 	float RegulatorOutput;
+	Int16U DACOffset;
 }RegulatorParamsStruct;
 
 // Functions

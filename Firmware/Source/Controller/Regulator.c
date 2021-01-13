@@ -33,7 +33,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	if(Regulator->DebugMode)
 		LL_WriteDAC(Regulator->CurrentTable[Regulator->RegulatorPulseCounter]);
 	else
-		LL_WriteDAC(CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange));
+		LL_WriteDAC(CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange) + Regulator->DACOffset);
 
 	REGULATOR_LoggingData(Regulator);
 
@@ -92,6 +92,7 @@ void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
 	}
 
 	Regulator->DebugMode = false;
+	Regulator->DACOffset = DataTable[REG_DAC_OFFSET];
 }
 //-----------------------------------------------
 
