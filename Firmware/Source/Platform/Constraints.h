@@ -20,7 +20,7 @@
 //
 #define V_BAT_THRESHOLD_MIN			100			// Â * 10
 #define V_BAT_THRESHOLD_MAX			500			// Â * 10
-#define V_BAT_THRESHOLD_DEF			470			// Â * 10
+#define V_BAT_THRESHOLD_DEF			450			// Â * 10
 //
 #define DAC_OUTPUT_LIM_MIN			0
 #define DAC_OUTPUT_LIM_MAX			4095
