@@ -21,8 +21,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{I_PER_CURBOARD_MIN, I_PER_CURBOARD_MAX, I_PER_CURBOARD_DEF},				// 10
 		{CURBOARD_QUANTITY_MIN, CURBOARD_QUANTITY_MAX, CURBOARD_QUANTITY_DEF},		// 11
 		{0, INT16U_MAX, 0},															// 12
-		{0, INT16U_MAX, 0},															// 13
-		{0, INT16U_MAX, 0},															// 14
+		{FAN_PERIOD_MIN, FAN_PERIOD_MAX, FAN_PERIOD_DEF},							// 13
+		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},															// 14
 		{0, 0, 0},																	// 15
 		{0, 0, 0},																	// 16
 		{0, 0, 0},																	// 17
@@ -34,7 +34,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 23
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 24
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 25
-		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 26
+		{V_BAT_K_MIN, V_BAT_K_MAX, V_BAT_K_DEF},									// 26
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 27
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 28
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 29

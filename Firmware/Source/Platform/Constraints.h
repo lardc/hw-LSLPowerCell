@@ -69,6 +69,18 @@
 #define CURRENT_SETPOINT_MIN		50			// (А * 10)
 #define CURRENT_SETPOINT_MAX		65000		// (А * 10)
 //
+#define FAN_PERIOD_MIN				0			// сек
+#define FAN_PERIOD_MAX				600			// сек
+#define FAN_PERIOD_DEF				300			// сек
+//
+#define FAN_TIME_MIN				0			// сек
+#define FAN_TIME_MAX				600			// сек
+#define FAN_TIME_DEF				60			// сек
+//
+#define V_BAT_K_MIN					0
+#define V_BAT_K_MAX					INT16U_MAX
+#define V_BAT_K_DEF					13400
+//
 
 // Types
 typedef struct __TableItemConstraint

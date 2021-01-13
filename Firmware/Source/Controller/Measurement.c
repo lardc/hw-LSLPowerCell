@@ -20,7 +20,11 @@ void MEASURE_StartNewSampling();
 //
 float MEASURE_SingleSampleBatteryVoltage()
 {
-	return CU_ADCtoV(ADC_Measure(ADC1, ADC1_V_BAT_CHANNEL));
+	DMA_TransferCompleteReset(DMA1, DMA_TRANSFER_COMPLETE);
+	ADC_SamplingStart(ADC1);
+	while(!DMA_IsTransferComplete(DMA1, DMA_TRANSFER_COMPLETE)){}
+
+	return CU_ADCtoV(MEASURE_DMAExtractVolatge());
 }
 //-----------------------------------------------
 

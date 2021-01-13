@@ -73,6 +73,8 @@ void CONTROL_Init()
 	// —брос значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
+
+	CU_LoadConvertParams();
 }
 //------------------------------------------
 

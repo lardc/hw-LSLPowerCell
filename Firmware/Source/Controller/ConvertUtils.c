@@ -77,8 +77,8 @@ void CU_LoadConvertParams()
 	AdcToVoltageParams.P2 = 0;
 	AdcToVoltageParams.P1 = 1;
 	AdcToVoltageParams.P0 = 0;
-	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1000;
-	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_K];
+	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1e6;
+	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_B];
 
 	// Параметры преобразования значения АЦП в ток и тока в ЦАП
 	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
