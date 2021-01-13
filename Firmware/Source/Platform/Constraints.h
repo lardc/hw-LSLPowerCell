@@ -9,10 +9,42 @@
 //Definitions
 #define NO		0
 #define YES		1
-
-#define PS_ACTIVITY_TIME_MIN		100			// לס
-#define PS_ACTIVITY_TIME_MAX		10000		// לס
-#define PS_ACTIVITY_TIME_DEF		1500		// לס
+//
+#define I_RANGE_THRESHOLD_MIN		0			// A * 10
+#define I_RANGE_THRESHOLD_MAX		INT16U_MAX	// A * 10
+#define I_RANGE_THRESHOLD_DEF		0			// A * 10
+//
+#define V_BAT_THRESHOLD_MIN			100			// ֲ * 10
+#define V_BAT_THRESHOLD_MAX			500			// ֲ * 10
+#define V_BAT_THRESHOLD_DEF			470			// ֲ * 10
+//
+#define DAC_OUTPUT_LIM_MIN			0
+#define DAC_OUTPUT_LIM_MAX			4095
+#define DAC_OUTPUT_LIM_DEF			3500
+//
+#define FULL_CHARGE_TIMEOUT_MIN		30000		// לס
+#define FULL_CHARGE_TIMEOUT_MAX		60000		// לס
+#define FULL_CHARGE_TIMEOUT_DEF		50000		// לס
+//
+#define RECHARGE_TIMEOUT_MIN		0			// לס
+#define RECHARGE_TIMEOUT_MAX		40000		// לס
+#define RECHARGE_TIMEOUT_DEF		20000		// לס
+//
+#define SHUNT_RESISTANCE_MIN		0			// לך־ל
+#define SHUNT_RESISTANCE_MAX		5000		// לך־ל
+#define SHUNT_RESISTANCE_DEF		250			// לך־ל
+//
+#define AFTER_PULSE_PAUSE_MIN		0			// לס
+#define AFTER_PULSE_PAUSE_MAX		40000		// לס
+#define AFTER_PULSE_PAUSE_DEF		15000		// לס
+//
+#define I_PER_CURBOARD_MIN			500			// A * 10
+#define I_PER_CURBOARD_MAX			15000		// A * 10
+#define I_PER_CURBOARD_DEF			10833		// A * 10
+//
+#define CURBOARD_QUANTITY_MIN		1
+#define CURBOARD_QUANTITY_MAX		6
+#define CURBOARD_QUANTITY_DEF		6
 //
 #define COEF_P2_MIN					0
 #define COEF_P2_MAX					INT16U_MAX
@@ -34,36 +66,9 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-#define PULSE_WIDTH_MIN				1			// (לס)
-#define PULSE_WIDTH_MAX				200			// (לס)
-#define PULSE_WIDTH_DEF				100			// (לס)
+#define CURRENT_SETPOINT_MIN		50			// (ְ * 10)
+#define CURRENT_SETPOINT_MAX		65000		// (ְ * 10)
 //
-#define FRONT_WIDTH_MIN				1			// (לס)
-#define FRONT_WIDTH_MAX				200			// (לס)
-#define FRONT_WIDTH_DEF				30			// (לס)
-//
-#define ALOWED_ERROR_MIN			0			// (% * 10)
-#define ALOWED_ERROR_MAX			1000		// (% * 10)
-#define ALOWED_ERROR_DEF			30			// (% * 10)
-//
-#define HW_I_CUTOFF_K_MIN			0			// (%)
-#define HW_I_CUTOFF_K_MAX			30			// (%)
-#define HW_I_CUTOFF_K_DEF			10			// (%)
-//
-#define START_DELAY_MIN				0			// (לס)
-#define START_DELAY_MAX				100			// (לס)
-#define START_DELAY_DEF				50			// (לס)
-//
-#define AFTER_PULSE_PAUSE_MIN		1000		// (לס)
-#define AFTER_PULSE_PAUSE_MAX		5000		// (לס)
-#define AFTER_PULSE_PAUSE_DEF		2000		// (לס)
-//
-#define VOLTAGE_SETPOINT_MIN		250			// (ֲ * 10)
-#define VOLTAGE_SETPOINT_MAX		20000		// (ֲ * 10)
-//
-#define POST_CHARGE_WAIT_MIN		200			// (לס)
-#define POST_CHARGE_WAIT_MAX		5000		// (לס)
-#define POST_CHARGE_WAIT_DEF		1000		// (לס)
 
 // Types
 typedef struct __TableItemConstraint
