@@ -255,6 +255,7 @@ void CONTROL_HighPriorityProcess()
 		{
 			CONTROL_StopProcess();
 			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
+			DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		}
 	}
 }

@@ -51,6 +51,10 @@
 #define REG_ADC_VOLTAGE_K				44	// Коэффициент грубой подстройки K
 #define REG_ADC_VOLTAGE_B				45	// Смещение грубой подстройки B
 //
+#define REG_K_AMP_RANGE0				10	// Коэффициент усиления тока в канале 0 (*100)
+#define REG_K_AMP_RANGE1				10	// Коэффициент усиления тока в канале 1 (*100)
+#define REG_K_AMP_RANGE2				10	// Коэффициент усиления тока в канале 2 (*100)
+//
 #define REG_ADC_I_RANGE0_P2				51	// Диапазон 0 - Коэффициент тонкой подстройки Р2 х1е6
 #define REG_ADC_I_RANGE0_P1				52	// Диапазон 0 - Коэффициент тонкой подстройки Р1 x1000
 #define REG_ADC_I_RANGE0_P0				53	// Диапазон 0 - Смещение тонкой подстройки Р0
@@ -117,7 +121,6 @@
 
 //  Warning
 #define WARNING_NONE					0
-#define WARNING_CURRENT_CUTOFF			1
 
 //  User Errors
 #define ERR_NONE						0

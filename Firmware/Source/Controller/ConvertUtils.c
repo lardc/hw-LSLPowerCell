@@ -13,6 +13,7 @@ typedef struct __ConvertParams
 	float P0;
 	float K;
 	float B;
+	float Kamp;
 }ConvertParams;
 
 // Variables
@@ -59,7 +60,8 @@ float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients)
 
 float CU_ADCtoI(Int16U Data, Int16U CurrentRange)
 {
-	return CU_ADCtoX(Data, &AdcToCurrentParams[CurrentRange]);
+	float Uadc = CU_ADCtoX(Data, &AdcToCurrentParams[CurrentRange]);
+	return (Uadc / AdcToCurrentParams[CurrentRange].Kamp / (float)DataTable[REG_SHUNT_RESISTANCE] / 1000);
 }
 //-----------------------------
 
@@ -86,6 +88,7 @@ void CU_LoadConvertParams()
 		AdcToCurrentParams[i].P0 = (Int16S)DataTable[REG_ADC_I_RANGE0_P0 + i * 6];
 		AdcToCurrentParams[i].K = (float)DataTable[REG_ADC_I_RANGE0_N + i * 6] / DataTable[REG_ADC_I_RANGE0_D + i * 6];
 		AdcToCurrentParams[i].B = (Int16S)DataTable[REG_ADC_I_RANGE0_B + i * 6];
+		AdcToCurrentParams[i].Kamp = (float)DataTable[REG_K_AMP_RANGE0 + i] / 100;
 
 		CurrentToDacParams[i].K = (float)DataTable[REG_I_TO_DAC_RANGE0_K + i * 2] / 1000;
 		CurrentToDacParams[i].B = (Int16S)DataTable[REG_I_TO_DAC_RANGE0_B + i * 2];
