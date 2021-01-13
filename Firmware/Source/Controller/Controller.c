@@ -345,24 +345,29 @@ void CONTROL_HandleFanLogic(bool IsImpulse)
 	static uint32_t IncrementCounter = 0;
 	static uint64_t FanOnTimeout = 0;
 
-	// Увеличение счётчика в простое
-	if (!IsImpulse)
-		IncrementCounter++;
-
-	// Включение вентилятора
-	if ((IncrementCounter > ((uint32_t)DataTable[REG_FAN_OPERATE_PERIOD] * 1000)) || IsImpulse)
+	if(DataTable[REG_FAN_CTRL])
 	{
-		IncrementCounter = 0;
-		FanOnTimeout = CONTROL_TimeCounter + ((uint32_t)DataTable[REG_FAN_OPERATE_TIME] * 1000);
-		LL_Fan(true);
+		// Увеличение счётчика в простое
+		if (!IsImpulse)
+			IncrementCounter++;
+
+		// Включение вентилятора
+		if ((IncrementCounter > ((uint32_t)DataTable[REG_FAN_OPERATE_PERIOD] * 1000)) || IsImpulse)
+		{
+			IncrementCounter = 0;
+			FanOnTimeout = CONTROL_TimeCounter + ((uint32_t)DataTable[REG_FAN_OPERATE_TIME] * 1000);
+			LL_Fan(true);
+		}
+
+		// Отключение вентилятора
+		if (FanOnTimeout && (CONTROL_TimeCounter > FanOnTimeout))
+		{
+			FanOnTimeout = 0;
+			LL_Fan(false);
+		}
 	}
-
-	// Отключение вентилятора
-	if (FanOnTimeout && (CONTROL_TimeCounter > FanOnTimeout))
-	{
-		FanOnTimeout = 0;
+	else
 		LL_Fan(false);
-	}
 }
 //-----------------------------------------------
 

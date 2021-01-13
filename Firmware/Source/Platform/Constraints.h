@@ -10,9 +10,13 @@
 #define NO		0
 #define YES		1
 //
-#define I_RANGE_THRESHOLD_MIN		0			// A * 10
-#define I_RANGE_THRESHOLD_MAX		INT16U_MAX	// A * 10
-#define I_RANGE_THRESHOLD_DEF		0			// A * 10
+#define I_RANGE0_THRESHOLD_MIN		0			// A * 10
+#define I_RANGE0_THRESHOLD_MAX		INT16U_MAX	// A * 10
+#define I_RANGE0_THRESHOLD_DEF		10000		// A * 10
+//
+#define I_RANGE1_THRESHOLD_MIN		0			// A * 10
+#define I_RANGE1_THRESHOLD_MAX		INT16U_MAX	// A * 10
+#define I_RANGE1_THRESHOLD_DEF		65000		// A * 10
 //
 #define V_BAT_THRESHOLD_MIN			100			// Â * 10
 #define V_BAT_THRESHOLD_MAX			500			// Â * 10
