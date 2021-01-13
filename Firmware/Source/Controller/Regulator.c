@@ -31,7 +31,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp +Qi;
 
 	if(Regulator->DebugMode)
-		LL_WriteDAC(Regulator->CurrentTable[Regulator->RegulatorPulseCounter]);
+		LL_WriteDAC(Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Regulator->DACOffset);
 	else
 		LL_WriteDAC(CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange) + Regulator->DACOffset);
 

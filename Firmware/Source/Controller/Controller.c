@@ -314,7 +314,7 @@ void CONTROL_StopProcess()
 	LL_SetStateLineSync(true);
 	TIM_Stop(TIM15);
 
-	AfterPulseCoefficient = (float)DataTable[REG_CURRENT_PULSE_VALUE] / CONTROL_CurrentMaxValue;
+	AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
 	CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_RECHARGE_TIMEOUT];
 }

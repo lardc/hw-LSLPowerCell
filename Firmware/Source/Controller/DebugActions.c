@@ -50,6 +50,7 @@ void DBGACT_PulseProcess(Int16U DACValue)
 
 	RegulatorParams.DebugMode = true;
 	RegulatorParams.CurrentTarget = DACValue;
+	RegulatorParams.DACOffset = DataTable[REG_DAC_OFFSET];
 	CONTROL_SineConfig(&RegulatorParams);
 
 	CONTROL_SetDeviceState(DS_None, SS_Pulse);

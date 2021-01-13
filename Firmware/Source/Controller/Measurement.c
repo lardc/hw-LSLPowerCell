@@ -84,12 +84,12 @@ void MEASURE_SetCurrentRange(volatile RegulatorParamsStruct* Regulator)
 	}
 	else if(Regulator->MeasuredCurrent <= DataTable[REG_CURRENT_THRESHOLD_RANGE1])
 	{
-		Regulator->CurrentRange = CURRENT_RANGE_0;
+		Regulator->CurrentRange = CURRENT_RANGE_1;
 		LL_SetCurrentRange1();
 	}
 	else
 	{
-		Regulator->CurrentRange = CURRENT_RANGE_0;
+		Regulator->CurrentRange = CURRENT_RANGE_2;
 		LL_SetCurrentRange2();
 	}
 
