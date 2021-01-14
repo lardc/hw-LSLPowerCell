@@ -13,12 +13,11 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator);
 //
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 {
-	float RegulatorError, Qp;
-	static float Qi = 0;
+	static float Qi = 0, Qp;
 
-	RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[Regulator->RegulatorPulseCounter] - Regulator->MeasuredCurrent);
+	Regulator->RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[Regulator->RegulatorPulseCounter] - Regulator->MeasuredCurrent);
 
-	Qi += RegulatorError * Regulator->Ki[Regulator->CurrentRange];
+	Qi += Regulator->RegulatorError * Regulator->Ki[Regulator->CurrentRange];
 
 	if(Qi > DataTable[REG_REGULATOR_QI_MAX])
 		Qi = DataTable[REG_REGULATOR_QI_MAX];
@@ -26,7 +25,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	if(Qi < (-1) * DataTable[REG_REGULATOR_QI_MAX])
 		Qi = (-1) * DataTable[REG_REGULATOR_QI_MAX];
 
-	Qp = RegulatorError * Regulator->Kp[Regulator->CurrentRange];
+	Qp = Regulator->RegulatorError * Regulator->Kp[Regulator->CurrentRange];
 
 	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp +Qi;
 
@@ -62,9 +61,9 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 	{
 		ScopeLogStep = 0;
 
-		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Regulator->MeasuredCurrent * 10);
-		CONTROL_RegulatorErr[LocalCounter] = (Int16U)(Regulator->RegulatorError * 10);
-		CONTROL_RegulatorOutput[LocalCounter] = (Int16U)(Regulator->RegulatorOutput * 10);
+		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Regulator->MeasuredCurrent);
+		CONTROL_RegulatorErr[LocalCounter] = (Int16S)(Regulator->RegulatorError);
+		CONTROL_RegulatorOutput[LocalCounter] = (Int16U)(Regulator->RegulatorOutput);
 		CONTROL_ValuesBatteryVoltage[LocalCounter] = (Int16U)(Regulator->MeasuredBatteryVoltage * 10);
 
 		CONTROL_Values_Counter = LocalCounter;
@@ -87,8 +86,8 @@ void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
 	// Кеширование коэффициентов регулятора
 	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
 	{
-		Regulator->Kp[i] = DataTable[REG_REGULATOR_RANGE0_Kp + i * 2];
-		Regulator->Ki[i] = DataTable[REG_REGULATOR_RANGE0_Ki + i * 2];
+		Regulator->Kp[i] = (float)DataTable[REG_REGULATOR_RANGE0_Kp + i * 2] / 1000;
+		Regulator->Ki[i] = (float)DataTable[REG_REGULATOR_RANGE0_Ki + i * 2] / 1000;
 	}
 
 	Regulator->DebugMode = false;

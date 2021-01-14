@@ -9,7 +9,7 @@
 //
 void LL_ToggleBoardLED()
 {
-	GPIO_Toggle(GPIO_LED);
+	//GPIO_Toggle(GPIO_LED);
 }
 //-----------------------------
 
@@ -34,21 +34,21 @@ void LL_PowerSupplyEnable(bool State)
 void LL_SetCurrentRange0()
 {
 	GPIO_SetState(GPIO_IFB_R0, false);
-	GPIO_SetState(GPIO_IFB_R0, false);
+	GPIO_SetState(GPIO_IFB_R1, false);
 }
 //-----------------------------
 
 void LL_SetCurrentRange1()
 {
 	GPIO_SetState(GPIO_IFB_R0, true);
-	GPIO_SetState(GPIO_IFB_R0, false);
+	GPIO_SetState(GPIO_IFB_R1, false);
 }
 //-----------------------------
 
 void LL_SetCurrentRange2()
 {
 	GPIO_SetState(GPIO_IFB_R0, false);
-	GPIO_SetState(GPIO_IFB_R0, true);
+	GPIO_SetState(GPIO_IFB_R1, true);
 }
 //-----------------------------
 

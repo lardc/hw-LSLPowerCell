@@ -61,7 +61,7 @@ float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients)
 float CU_ADCtoI(Int16U Data, Int16U CurrentRange)
 {
 	float Uadc = CU_ADCtoX(Data, &AdcToCurrentParams[CurrentRange]);
-	return (Uadc / AdcToCurrentParams[CurrentRange].Kamp / (float)DataTable[REG_SHUNT_RESISTANCE] / 1000);
+	return (Uadc / AdcToCurrentParams[CurrentRange].Kamp / (float)DataTable[REG_SHUNT_RESISTANCE] * 1000);
 }
 //-----------------------------
 
