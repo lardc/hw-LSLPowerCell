@@ -9,7 +9,7 @@
 //
 void LL_ToggleBoardLED()
 {
-	//GPIO_Toggle(GPIO_LED);
+	GPIO_Toggle(GPIO_LED);
 }
 //-----------------------------
 

@@ -43,9 +43,7 @@ void TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))
 	{
-		GPIO_SetState(GPIO_LED, true);
 		CONTROL_HighPriorityProcess();
-		GPIO_SetState(GPIO_LED, false);
 
 		TIM_StatusClear(TIM15);
 	}
