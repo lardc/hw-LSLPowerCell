@@ -40,8 +40,8 @@ Int16U CU_ItoDAC(float Current, Int16U CurrentRange)
 	else if(DACValue > DAC_MAX_VAL)
 		DACValue = DAC_MAX_VAL;
 
-	if(DACValue > DataTable[REG_DAC_OUTPUT_LIMIT_VALUE])
-		DACValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
+	if(DACValue > (DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] - DataTable[REG_DAC_OFFSET]))
+		DACValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] - DataTable[REG_DAC_OFFSET];
 
 	return (Int16U)DACValue;
 }
