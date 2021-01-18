@@ -42,6 +42,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	{
 		Regulator->DebugMode = false;
 		Regulator->RegulatorPulseCounter = 0;
+		Qi = 0;
 		return true;
 	}
 	else
