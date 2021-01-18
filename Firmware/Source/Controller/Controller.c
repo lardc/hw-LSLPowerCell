@@ -14,6 +14,10 @@
 #include "Measurement.h"
 #include "math.h"
 
+// Definitions
+//
+#define CURRENT_BOARD_LOCK_DELAY			500	// Задержка блокировки CurrentBoard, мс
+
 // Types
 //
 typedef void (*FUNC_AsyncDelegate)();
@@ -310,8 +314,11 @@ void CONTROL_StopProcess()
 	float AfterPulseCoefficient;
 
 	LL_WriteDAC(0);
-	LL_SetStateLineSync(true);
 	TIM_Stop(TIM15);
+
+	DELAY_US(CURRENT_BOARD_LOCK_DELAY);
+
+	LL_SetStateLineSync(true);
 
 	AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
