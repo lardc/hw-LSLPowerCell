@@ -49,19 +49,18 @@ Int16U CU_ItoDAC(float Current, Int16U CurrentRange)
 
 float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients)
 {
-	float Temp;
-
-	Temp = Data * Coefficients->K + Coefficients->B;
-	Temp = Temp * Temp * Coefficients->P2 + Temp * Coefficients->P1 + Coefficients->P0;
-
-	return Temp;
+	return (Data * Coefficients->K + Coefficients->B);
 }
 //-----------------------------
 
 float CU_ADCtoI(Int16U Data, Int16U CurrentRange)
 {
-	float Uadc = CU_ADCtoX(Data, &AdcToCurrentParams[CurrentRange]);
-	return (Uadc / AdcToCurrentParams[CurrentRange].Kamp / (float)DataTable[REG_SHUNT_RESISTANCE] * 1000);
+	float Uadc, Current;
+
+	Uadc = CU_ADCtoX(Data, &AdcToCurrentParams[CurrentRange]);
+	Current = Uadc / AdcToCurrentParams[CurrentRange].Kamp / DataTable[REG_SHUNT_RESISTANCE] * 1000;
+
+	return (Current * Current * AdcToCurrentParams->P2 + Current * AdcToCurrentParams->P1 + AdcToCurrentParams->P0);
 }
 //-----------------------------
 
@@ -74,18 +73,15 @@ float CU_ADCtoV(Int16U Data)
 void CU_LoadConvertParams()
 {
 	// Параметры преобразования значения АЦП в напряжение
-	AdcToVoltageParams.P2 = 0;
-	AdcToVoltageParams.P1 = 1;
-	AdcToVoltageParams.P0 = 0;
 	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1e6;
 	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_B];
 
 	// Параметры преобразования значения АЦП в ток и тока в ЦАП
 	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
 	{
-		AdcToCurrentParams[i].P2 = (float)DataTable[REG_ADC_I_RANGE0_P2 + i * 6] / 1e-6;
+		AdcToCurrentParams[i].P2 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P2 + i * 6]) / 1e6;
 		AdcToCurrentParams[i].P1 = (float)DataTable[REG_ADC_I_RANGE0_P1 + i * 6] / 1000;
-		AdcToCurrentParams[i].P0 = (Int16S)DataTable[REG_ADC_I_RANGE0_P0 + i * 6];
+		AdcToCurrentParams[i].P0 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P0 + i * 6]) / 10;
 		AdcToCurrentParams[i].K = (float)DataTable[REG_ADC_I_RANGE0_N + i * 6] / DataTable[REG_ADC_I_RANGE0_D + i * 6];
 		AdcToCurrentParams[i].B = (Int16S)DataTable[REG_ADC_I_RANGE0_B + i * 6];
 		AdcToCurrentParams[i].Kamp = (float)DataTable[REG_K_AMP_RANGE0 + i] / 100;
