@@ -60,7 +60,7 @@ float CU_ADCtoI(Int16U Data, Int16U CurrentRange)
 	Uadc = CU_ADCtoX(Data, &AdcToCurrentParams[CurrentRange]);
 	Current = Uadc / AdcToCurrentParams[CurrentRange].Kamp / DataTable[REG_SHUNT_RESISTANCE] * 1000;
 
-	return (Current * Current * AdcToCurrentParams->P2 + Current * AdcToCurrentParams->P1 + AdcToCurrentParams->P0);
+	return (Current * Current * AdcToCurrentParams[CurrentRange].P2 + Current * AdcToCurrentParams[CurrentRange].P1 + AdcToCurrentParams[CurrentRange].P0);
 }
 //-----------------------------
 
