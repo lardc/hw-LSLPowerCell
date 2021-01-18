@@ -9,6 +9,7 @@
 #include "Controller.h"
 #include "DataTable.h"
 #include "Controller.h"
+#include "Delay.h"
 
 // Functions
 //
@@ -56,7 +57,7 @@ void DBGACT_PulseProcess(Int16U DACValue)
 	CONTROL_SetDeviceState(DS_None, SS_Pulse);
 	CONTROL_StartProcess();
 
-	CONTROL_DelayMs(20);
+	DELAY_MS(20);
 
 	CONTROL_SetDeviceState(DS_None, SS_None);
 }
