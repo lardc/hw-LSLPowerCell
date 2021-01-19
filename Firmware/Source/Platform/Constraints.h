@@ -89,6 +89,9 @@
 #define V_BAT_K_MAX					INT16U_MAX
 #define V_BAT_K_DEF					13400
 //
+#define CONF_STATE_TIMEOUT_MIN		1000		// мс
+#define CONF_STATE_TIMEOUT_MAX		10000		// мс
+#define CONF_STATE_TIMEOUT_DEF		5000		// мс
 
 // Types
 typedef struct __TableItemConstraint

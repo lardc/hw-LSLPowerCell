@@ -31,6 +31,7 @@ static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_AfterPulsePause = 0;
 volatile Int64U	CONTROL_BatteryChargeTimeCounter = 0;
+volatile Int64U CONTROL_ConfigStateCounter = 0;
 volatile Int16U CONTROL_Values_Counter = 0;
 volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
@@ -146,6 +147,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if (CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				CONTROL_ConfigStateCounter = CONTROL_TimeCounter + DataTable[REG_CONFIG_READY_STATE_TIMEOUT];
 				CONTROL_SetDeviceState(DS_InProcess, SS_PulsePrepare);
 			}
 			else
@@ -215,6 +217,7 @@ void CONTROL_LogicProcess()
 
 		case SS_PulsePrepare:
 			CONTROL_StartPrepare();
+			CONTROL_SetDeviceState(DS_ConfigReady, SS_None);
 			break;
 
 		case SS_WaitAfterPulse:
@@ -235,6 +238,9 @@ void CONTROL_LogicProcess()
 
 		default:
 			CONTROL_BatteryVoltageCheck();
+
+			if((CONTROL_State == DS_ConfigReady) && (CONTROL_TimeCounter >= CONTROL_ConfigStateCounter))
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			break;
 	}
 }
@@ -282,8 +288,6 @@ void CONTROL_StartPrepare()
 	CONTROL_SineConfig(&RegulatorParams);
 
 	MEASURE_SetCurrentRange(&RegulatorParams);
-
-	CONTROL_SetDeviceState(DS_ConfigReady, SS_None);
 }
 //-----------------------------------------------
 

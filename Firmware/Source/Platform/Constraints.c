@@ -22,9 +22,9 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{CURBOARD_QUANTITY_MIN, CURBOARD_QUANTITY_MAX, CURBOARD_QUANTITY_DEF},		// 11
 		{0, INT16U_MAX, 0},															// 12
 		{FAN_PERIOD_MIN, FAN_PERIOD_MAX, FAN_PERIOD_DEF},							// 13
-		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},															// 14
+		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},									// 14
 		{DAC_OFFSET_MIN, DAC_OFFSET_MAX, DAC_OFFSET_DEF},							// 15
-		{0, 0, 0},																	// 16
+		{CONF_STATE_TIMEOUT_MIN, CONF_STATE_TIMEOUT_MAX, CONF_STATE_TIMEOUT_DEF},	// 16
 		{0, 0, 0},																	// 17
 		{0, 0, 0},																	// 18
 		{0, 0, 0},																	// 19

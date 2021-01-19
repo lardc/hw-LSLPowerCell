@@ -41,7 +41,8 @@
 #define REG_FAN_OPERATE_PERIOD			13	// Период работы вентилятора (сек)
 #define REG_FAN_OPERATE_TIME			14	// Время включенного состояния вентилятора (сек)
 #define REG_DAC_OFFSET					15	// Смещение сигнала с ЦАП
-// 16 - 19
+#define REG_CONFIG_READY_STATE_TIMEOUT	16	// Таймаут нахождения блока в состоянии DS_ConfigReady
+// 17 - 19
 #define REG_I_TO_DAC_RANGE0_K			20	// Диапазон 0 - Коэффициент пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE0_B			21	// Диапазон 0 - Смещение пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE1_K			22	// Диапазон 1 - Коэффициент пересчета в значение ЦАП
