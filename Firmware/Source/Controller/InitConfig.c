@@ -31,15 +31,17 @@ void INITCFG_ConfigIO()
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_FAN);
 	GPIO_InitPushPullOutput(GPIO_PS_CTRL);
-	GPIO_InitPushPullOutput(GPIO_SYNC_CTRL);
 	GPIO_InitPushPullOutput(GPIO_IFB_R0);
 	GPIO_InitPushPullOutput(GPIO_IFB_R1);
 	GPIO_InitPushPullOutput(GPIO_LED);
 
+	// Выходы OpenDrain
+	GPIO_InitOpenDrainOutput(GPIO_SYNC_CTRL, NoPull);
+
 	// Начальная установка состояний выводов
 	GPIO_SetState(GPIO_FAN, false);
 	GPIO_SetState(GPIO_PS_CTRL, false);
-	GPIO_SetState(GPIO_SYNC_CTRL, false);
+	GPIO_SetState(GPIO_SYNC_CTRL, true);
 	GPIO_SetState(GPIO_IFB_R0, false);
 	GPIO_SetState(GPIO_IFB_R1, false);
 	GPIO_SetState(GPIO_LED, false);
