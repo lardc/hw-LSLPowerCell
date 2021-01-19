@@ -13,7 +13,7 @@ void LL_ToggleBoardLED()
 }
 //-----------------------------
 
-void LL_SetStateLineSync(bool State)
+void LL_LSLCurrentBoardLock(bool State)
 {
 	GPIO_SetState(GPIO_SYNC_CTRL, State);
 }

@@ -100,7 +100,7 @@ void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
 	
-	LL_SetStateLineSync(true);
+	LL_LSLCurrentBoardLock(true);
 	LL_PowerSupplyEnable(false);
 
 	CONTROL_SetDeviceState(DS_None, SS_None);
@@ -318,7 +318,7 @@ void CONTROL_StopProcess()
 
 	DELAY_US(CURRENT_BOARD_LOCK_DELAY);
 
-	LL_SetStateLineSync(true);
+	LL_LSLCurrentBoardLock(true);
 
 	AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
@@ -341,7 +341,7 @@ void CONTROL_StartProcess()
 {
 	CONTROL_HandleFanLogic(true);
 
-	LL_SetStateLineSync(false);
+	LL_LSLCurrentBoardLock(false);
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);
 }
