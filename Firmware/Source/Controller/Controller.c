@@ -16,7 +16,7 @@
 
 // Definitions
 //
-#define CURRENT_BOARD_LOCK_DELAY			500	// Задержка блокировки CurrentBoard, мс
+#define CURRENT_BOARD_LOCK_DELAY			500	// Задержка блокировки CurrentBoard, мкс
 
 // Types
 //
