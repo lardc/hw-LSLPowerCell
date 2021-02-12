@@ -63,9 +63,9 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, 0},									// 52
 		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, 0},									// 53
 		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, 0},									// 54
-		{0, 0, 0},																	// 55
-		{0, 0, 0},																	// 56
-		{0, 0, 0},																	// 57
+		{0, INT16U_MAX, 0},															// 55
+		{0, INT16U_MAX, 0},															// 56
+		{0, INT16U_MAX, 0},															// 57
 		{0, 0, 0},																	// 58
 		{0, 0, 0},																	// 59
 		{0, 0, 0},																	// 60
