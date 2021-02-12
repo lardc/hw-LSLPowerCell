@@ -85,9 +85,9 @@
 #define REG_REGULATOR_RANGE2_Kp			53	// Диапазон 2 - Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_RANGE2_Ki			54	// Диапазон 2 - Интегральный коэффициент регулятора
 //
-#define REG_REGULATOR_TF_Ki_RANG0		55	// Диапазон 0 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / A) * 1000)
-#define REG_REGULATOR_TF_Ki_RANG1		56	// Диапазон 1 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / A) * 1000)
-#define REG_REGULATOR_TF_Ki_RANG2		57	// Диапазон 2 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / A) * 1000)
+#define REG_REGULATOR_TF_Ki_RANG0		55	// Диапазон 0 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dA) * 1000)
+#define REG_REGULATOR_TF_Ki_RANG1		56	// Диапазон 1 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dA) * 1000)
+#define REG_REGULATOR_TF_Ki_RANG2		57	// Диапазон 2 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dA) * 1000)
 
 #define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)
 
