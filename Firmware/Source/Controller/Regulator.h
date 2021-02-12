@@ -22,6 +22,7 @@ typedef struct __RegulatorParams
 	float CurrentTable[PULSE_BUFFER_SIZE];
 	float Kp[CURRENT_RANGE_QUANTITY];
 	float Ki[CURRENT_RANGE_QUANTITY];
+	float KiTune[CURRENT_RANGE_QUANTITY];
 	float RegulatorError;
 	bool DebugMode;
 	Int16U RegulatorPulseCounter;
