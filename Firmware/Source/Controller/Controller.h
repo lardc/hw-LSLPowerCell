@@ -52,6 +52,7 @@ void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_HighPriorityProcess();
 void CONTROL_ExternalInterruptProcess();
 void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartProcess();
 void CONTROL_HandleFanLogic(bool IsImpulse);
 

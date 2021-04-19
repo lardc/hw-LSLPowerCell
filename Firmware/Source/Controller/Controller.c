@@ -286,6 +286,8 @@ void CONTROL_StartPrepare()
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
 	CONTROL_SineConfig(&RegulatorParams);
+	CONTROL_SineConfig(&RegulatorParams);
+
 
 	MEASURE_SetCurrentRange(&RegulatorParams);
 }
@@ -309,6 +311,26 @@ void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 
 		if(Regulator->CurrentTable[i] < 0)
 			Regulator->CurrentTable[i] = 0;
+	}
+}
+//-----------------------------------------------
+
+void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
+{
+	if(DataTable[REG_USE_LINEAR_DOWN])
+	{
+		uint32_t A, B, C;
+		int HalfBufferSize = PULSE_BUFFER_SIZE / 2;
+
+		// Ax + By + C = 0
+		A = -((uint32_t)Regulator->CurrentTarget);
+		B = (uint32_t)(HalfBufferSize - PULSE_BUFFER_SIZE);
+		C = ((uint32_t)PULSE_BUFFER_SIZE * Regulator->CurrentTarget);
+
+		for(int i = HalfBufferSize; i < PULSE_BUFFER_SIZE; ++i)
+		{
+			Regulator->CurrentTable[i] = (float)((i * A + C) / -B);
+		}
 	}
 }
 //-----------------------------------------------

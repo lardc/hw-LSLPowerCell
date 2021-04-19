@@ -42,6 +42,7 @@
 #define REG_FAN_OPERATE_TIME			14	// Время включенного состояния вентилятора (сек)
 #define REG_DAC_OFFSET					15	// Смещение сигнала с ЦАП
 #define REG_CONFIG_READY_STATE_TIMEOUT	16	// Таймаут нахождения блока в состоянии DS_ConfigReady
+#define REG_RATE_LINEAR_DOWN			17	// Скорость спада
 // 17 - 19
 #define REG_I_TO_DAC_RANGE0_K			20	// Диапазон 0 - Коэффициент пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE0_B			21	// Диапазон 0 - Смещение пересчета в значение ЦАП
@@ -85,9 +86,10 @@
 #define REG_REGULATOR_RANGE2_Kp			53	// Диапазон 2 - Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_RANGE2_Ki			54	// Диапазон 2 - Интегральный коэффициент регулятора
 
-#define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)
-
 // Несохраняемы регистры чтения-записи
+#define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)
+#define REG_USE_LINEAR_DOWN				130	// Спад тока идёт по линейному закону
+
 #define REG_DBG							150	// Регистр режима Отладки
 
 // Регистры только чтение
