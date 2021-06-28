@@ -74,8 +74,8 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-#define CURRENT_SETPOINT_MIN		50			// (А * 10)
-#define CURRENT_SETPOINT_MAX		4500		// (А * 10)
+#define CURRENT_SETPOINT_MIN		0			// (А * 10)
+#define CURRENT_SETPOINT_MAX		65000		// (А * 10)
 //
 #define FAN_PERIOD_MIN				0			// сек
 #define FAN_PERIOD_MAX				600			// сек
@@ -92,6 +92,10 @@
 #define CONF_STATE_TIMEOUT_MIN		1000		// мс
 #define CONF_STATE_TIMEOUT_MAX		10000		// мс
 #define CONF_STATE_TIMEOUT_DEF		5000		// мс
+
+#define POINT_OF_LIN_MIN			100			// у.е.
+#define POINT_OF_LIN_MAX			200			// у.е.
+#define POINT_OF_LIN_DEF			120			// у.е.
 
 // Types
 typedef struct __TableItemConstraint

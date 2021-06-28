@@ -37,6 +37,7 @@ volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
+volatile Int16U CONTROL_CurentTable[VALUES_x_SIZE];
 //
 float 	CONTROL_CurrentMaxValue = 0;
 //
@@ -61,10 +62,10 @@ bool CONTROL_BatteryVoltageCheck();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR};
-	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
-	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
-	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage, (pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr};
+	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR, EP_CUR_TABLE};
+	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
+	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage, (pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr, (pInt16U)CONTROL_CurentTable};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -286,8 +287,7 @@ void CONTROL_StartPrepare()
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
 	CONTROL_SineConfig(&RegulatorParams);
-	CONTROL_SineConfig(&RegulatorParams);
-
+	CONTROL_LinearConfig(&RegulatorParams);
 
 	MEASURE_SetCurrentRange(&RegulatorParams);
 }
@@ -308,6 +308,7 @@ void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
 	{
 		Regulator->CurrentTable[i] = Regulator->CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+		CONTROL_CurentTable[i] = (Int16U)Regulator->CurrentTable[i];
 
 		if(Regulator->CurrentTable[i] < 0)
 			Regulator->CurrentTable[i] = 0;
@@ -319,17 +320,26 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 {
 	if(DataTable[REG_USE_LINEAR_DOWN])
 	{
-		uint32_t A, B, C;
-		int HalfBufferSize = PULSE_BUFFER_SIZE / 2;
+		int32_t A, B, C;
+		int StarPointOfLinear = DataTable[REG_POINT_OF_START_LINEAR_FALL];
+		float CurentSinEnd = Regulator->CurrentTable[StarPointOfLinear];
+		uint16_t X1, Y1, X2, Y2;
+
+		X1 = (uint16_t)StarPointOfLinear; 	Y1 = (uint16_t)CurentSinEnd;
+		X2 = PULSE_BUFFER_SIZE; 			Y2 = 0;
 
 		// Ax + By + C = 0
-		A = -((uint32_t)Regulator->CurrentTarget);
-		B = (uint32_t)(HalfBufferSize - PULSE_BUFFER_SIZE);
-		C = ((uint32_t)PULSE_BUFFER_SIZE * Regulator->CurrentTarget);
+		A = (int32_t)(Y1 - Y2);
+		B = (int32_t)(X2 - X1);
+		C = (int32_t)((X1 * Y2) - (X2 * Y1));
 
-		for(int i = HalfBufferSize; i < PULSE_BUFFER_SIZE; ++i)
+		for(int i = StarPointOfLinear; i < PULSE_BUFFER_SIZE; ++i)
 		{
-			Regulator->CurrentTable[i] = (float)((i * A + C) / -B);
+			Regulator->CurrentTable[i] = (float)((i * A + C) / (-B));
+			CONTROL_CurentTable[i] = (Int16U)Regulator->CurrentTable[i];
+
+			if(Regulator->CurrentTable[i] < 0)
+				Regulator->CurrentTable[i] = 0;
 		}
 	}
 }
