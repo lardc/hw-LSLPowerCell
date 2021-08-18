@@ -39,9 +39,10 @@ volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
 volatile Int16U CONTROL_CurentTable[VALUES_x_SIZE];
 //
-float 	CONTROL_CurrentMaxValue = 0;
+float CONTROL_CurrentMaxValue = 0;
 //
 volatile RegulatorParamsStruct RegulatorParams;
+static FUNC_AsyncDelegate LowPriorityHandle = NULL;
 
 /// Forward functions
 //
@@ -51,6 +52,7 @@ void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
+void CONTROL_PostPulseSlowSequence();
 void CONTROL_ResetOutputRegisters();
 bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartPrepare();
@@ -115,6 +117,12 @@ void CONTROL_Idle()
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
+
+	if(LowPriorityHandle)
+	{
+		LowPriorityHandle();
+		LowPriorityHandle = NULL;
+	}
 }
 //------------------------------------------
 
@@ -347,18 +355,20 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_StopProcess()
 {
-	float AfterPulseCoefficient;
-
-	LL_WriteDAC(0);
 	TIM_Stop(TIM15);
+	LowPriorityHandle = &CONTROL_PostPulseSlowSequence;
 
-	DELAY_US(CURRENT_BOARD_LOCK_DELAY);
-
-	LL_LSLCurrentBoardLock(true);
-
-	AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
+	float AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
 	CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_RECHARGE_TIMEOUT];
+}
+//------------------------------------------
+
+void CONTROL_PostPulseSlowSequence()
+{
+	LL_WriteDAC(0);
+	DELAY_US(CURRENT_BOARD_LOCK_DELAY);
+	LL_LSLCurrentBoardLock(true);
 }
 //------------------------------------------
 
@@ -367,7 +377,6 @@ void CONTROL_ExternalInterruptProcess()
 	if (CONTROL_State == DS_ConfigReady)
 	{
 		CONTROL_SetDeviceState(DS_InProcess, SS_Pulse);
-
 		CONTROL_StartProcess();
 	}
 }
