@@ -7,7 +7,7 @@
 // 
 #define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
-#define EP_COUNT								5		// Количество массивов для чтения
+#define EP_COUNT								6		// Количество массивов для чтения
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 #define CURRENT_PULSE_WIDTH						10000	// Длительность импульса тока (мкс)
 #define CURRENT_PULSE_TAIL						5000	// Длительность хвоста импульса тока (мкс)

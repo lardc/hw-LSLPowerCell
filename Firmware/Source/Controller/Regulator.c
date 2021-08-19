@@ -80,8 +80,9 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 
 		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Regulator->MeasuredCurrent);
 		CONTROL_RegulatorErr[LocalCounter] = (Int16S)(Regulator->RegulatorError);
-		CONTROL_RegulatorOutput[LocalCounter] = (Int16U)(Regulator->RegulatorOutput);
+		CONTROL_RegulatorOutput[LocalCounter] = (Int16S)(Regulator->RegulatorOutput);
 		CONTROL_ValuesBatteryVoltage[LocalCounter] = (Int16U)(Regulator->MeasuredBatteryVoltage * 10);
+		CONTROL_DACRawData[LocalCounter] = (Int16U)(Regulator->DACSetpoint);
 
 		CONTROL_Values_Counter = LocalCounter;
 

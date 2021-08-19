@@ -141,5 +141,6 @@
 #define EP_REGULATOR_OUTPUT				3
 #define EP_REGULATOR_ERR				4
 #define EP_CUR_TABLE					5
+#define EP_DAC_RAW_DATA					6
 
 #endif //  __DEV_OBJ_DIC_H

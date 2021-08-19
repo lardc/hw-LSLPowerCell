@@ -38,6 +38,7 @@ volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
 volatile Int16U CONTROL_CurentTable[VALUES_x_SIZE];
+volatile Int16U CONTROL_DACRawData[VALUES_x_SIZE];
 //
 float CONTROL_CurrentMaxValue = 0;
 //
@@ -64,10 +65,19 @@ bool CONTROL_BatteryVoltageCheck();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR, EP_CUR_TABLE};
-	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
-	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
-	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage, (pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr, (pInt16U)CONTROL_CurentTable};
+	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR, EP_CUR_TABLE,
+			EP_DAC_RAW_DATA};
+
+	Int16U EPSized[EP_COUNT] =
+			{VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+
+	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+			(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+			(pInt16U)&CONTROL_Values_Counter};
+
+	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage,
+			(pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr, (pInt16U)CONTROL_CurentTable,
+			(pInt16U)CONTROL_DACRawData};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
