@@ -333,16 +333,25 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 	float StartCurrent = 30;
 	float StopCurrent = -30;
 
-	Int16U StartIndex = CURRENT_PULSE_WIDTH / TIMER15_uS / 2;
-	float DecreaseStep = (StartCurrent - StopCurrent) / (PULSE_BUFFER_SIZE - StartIndex);
+	Int16U TopIndex = CURRENT_PULSE_WIDTH / TIMER15_uS / 2;
 
-	for (int i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
+	// Поиск стартового индекса
+	Int16U StartIndex = TopIndex;
+	for (int i = TopIndex; i < PULSE_BUFFER_SIZE; ++i)
 	{
 		if (Regulator->CurrentTable[i] < StartCurrent)
 		{
-			StartCurrent -= DecreaseStep;
-			Regulator->CurrentTable[i] = StartCurrent;
+			StartIndex = i;
+			break;
 		}
+	}
+
+	// Дописываем плавно спадающий хвост
+	float DecreaseStep = (StartCurrent - StopCurrent) / (PULSE_BUFFER_SIZE - StartIndex);
+	for (int i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
+	{
+		StartCurrent -= DecreaseStep;
+		Regulator->CurrentTable[i] = StartCurrent;
 	}
 }
 //-----------------------------------------------
