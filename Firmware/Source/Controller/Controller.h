@@ -54,6 +54,7 @@ void CONTROL_HighPriorityProcess();
 void CONTROL_ExternalInterruptProcess();
 void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_CopyCurrentToEP(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartProcess();
 void CONTROL_HandleFanLogic(bool IsImpulse);
 

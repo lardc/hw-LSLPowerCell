@@ -14,10 +14,6 @@
 #include "Measurement.h"
 #include "math.h"
 
-// Definitions
-//
-#define CURRENT_BOARD_LOCK_DELAY			500	// Задержка блокировки CurrentBoard, мкс
-
 // Types
 //
 typedef void (*FUNC_AsyncDelegate)();
@@ -306,6 +302,7 @@ void CONTROL_StartPrepare()
 	CONTROL_CashVariables();
 	CONTROL_SineConfig(&RegulatorParams);
 	CONTROL_LinearConfig(&RegulatorParams);
+	CONTROL_CopyCurrentToEP(&RegulatorParams);
 
 	MEASURE_SetCurrentRange(&RegulatorParams);
 }
@@ -327,37 +324,33 @@ void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 	{
 		float Setpoint = Regulator->CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
 		Regulator->CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
-		CONTROL_CurentTable[i] = (Int16U)Regulator->CurrentTable[i];
 	}
 }
 //-----------------------------------------------
 
 void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 {
-	if(DataTable[REG_USE_LINEAR_DOWN])
+	float StartCurrent = 30;
+	float StopCurrent = -30;
+
+	Int16U StartIndex = CURRENT_PULSE_WIDTH / TIMER15_uS / 2;
+	float DecreaseStep = (StartCurrent - StopCurrent) / (PULSE_BUFFER_SIZE - StartIndex);
+
+	for (int i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
 	{
-		int32_t A, B, C;
-		int StarPointOfLinear = DataTable[REG_POINT_OF_START_LINEAR_FALL];
-		float CurentSinEnd = Regulator->CurrentTable[StarPointOfLinear];
-		uint16_t X1, Y1, X2, Y2;
-
-		X1 = (uint16_t)StarPointOfLinear; 	Y1 = (uint16_t)CurentSinEnd;
-		X2 = PULSE_BUFFER_SIZE; 			Y2 = 0;
-
-		// Ax + By + C = 0
-		A = (int32_t)(Y1 - Y2);
-		B = (int32_t)(X2 - X1);
-		C = (int32_t)((X1 * Y2) - (X2 * Y1));
-
-		for(int i = StarPointOfLinear; i < PULSE_BUFFER_SIZE; ++i)
+		if (Regulator->CurrentTable[i] < StartCurrent)
 		{
-			Regulator->CurrentTable[i] = (float)((i * A + C) / (-B));
-			CONTROL_CurentTable[i] = (Int16U)Regulator->CurrentTable[i];
-
-			if(Regulator->CurrentTable[i] < 0)
-				Regulator->CurrentTable[i] = 0;
+			StartCurrent -= DecreaseStep;
+			Regulator->CurrentTable[i] = StartCurrent;
 		}
 	}
+}
+//-----------------------------------------------
+
+void CONTROL_CopyCurrentToEP(volatile RegulatorParamsStruct* Regulator)
+{
+	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
+		CONTROL_CurentTable[i] = (Int16S)Regulator->CurrentTable[i];
 }
 //-----------------------------------------------
 
@@ -375,7 +368,6 @@ void CONTROL_StopProcess()
 void CONTROL_PostPulseSlowSequence()
 {
 	LL_WriteDAC(0);
-	DELAY_US(CURRENT_BOARD_LOCK_DELAY);
 	LL_LSLCurrentBoardLock(true);
 }
 //------------------------------------------
