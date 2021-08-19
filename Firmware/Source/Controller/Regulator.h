@@ -27,6 +27,8 @@ typedef struct __RegulatorParams
 	Int16U RegulatorPulseCounter;
 	float RegulatorOutput;
 	Int16U DACOffset;
+	Int16U DACLimitValue;
+	Int16U DACSetpoint;
 }RegulatorParamsStruct;
 
 // Functions
