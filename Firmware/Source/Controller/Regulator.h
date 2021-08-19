@@ -9,7 +9,7 @@
 
 // Definitions
 //
-#define PULSE_BUFFER_SIZE	CURRENT_PULSE_WIDTH / TIMER15_uS
+#define PULSE_BUFFER_SIZE	VALUES_x_SIZE
 
 // Structs
 //

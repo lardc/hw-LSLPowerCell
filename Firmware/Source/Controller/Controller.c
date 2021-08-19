@@ -315,11 +315,9 @@ void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 {
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
 	{
-		Regulator->CurrentTable[i] = Regulator->CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+		float Setpoint = Regulator->CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
+		Regulator->CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
 		CONTROL_CurentTable[i] = (Int16U)Regulator->CurrentTable[i];
-
-		if(Regulator->CurrentTable[i] < 0)
-			Regulator->CurrentTable[i] = 0;
 	}
 }
 //-----------------------------------------------
