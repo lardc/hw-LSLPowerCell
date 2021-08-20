@@ -1,4 +1,4 @@
-// Includes
+п»ї// Includes
 //
 #include "ConvertUtils.h"
 #include "LowLevel.h"
@@ -28,7 +28,7 @@ float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients);
 //
 float CU_ItoDAC(float Current, Int16U CurrentRange)
 {
-	// Пересчет амплитуды тока в расчете на одну CurrentBoard
+	// РџРµСЂРµСЃС‡РµС‚ Р°РјРїР»РёС‚СѓРґС‹ С‚РѕРєР° РІ СЂР°СЃС‡РµС‚Рµ РЅР° РѕРґРЅСѓ CurrentBoard
 	Current = Current / DataTable[REG_CURBOARD_QUANTITY];
 	return (Current + CurrentToDacParams[CurrentRange].B) * CurrentToDacParams[CurrentRange].K;
 }
@@ -59,11 +59,11 @@ float CU_ADCtoV(Int16U Data)
 
 void CU_LoadConvertParams()
 {
-	// Параметры преобразования значения АЦП в напряжение
+	// РџР°СЂР°РјРµС‚СЂС‹ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ РђР¦Рџ РІ РЅР°РїСЂСЏР¶РµРЅРёРµ
 	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1e6;
 	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_B];
 
-	// Параметры преобразования значения АЦП в ток и тока в ЦАП
+	// РџР°СЂР°РјРµС‚СЂС‹ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ РђР¦Рџ РІ С‚РѕРє Рё С‚РѕРєР° РІ Р¦РђРџ
 	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
 	{
 		AdcToCurrentParams[i].P2 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P2 + i * 6]) / 1e6;

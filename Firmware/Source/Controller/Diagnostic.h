@@ -1,4 +1,4 @@
-#ifndef __DIAGNOSTIC_H
+﻿#ifndef __DIAGNOSTIC_H
 #define __DIAGNOSTIC_H
 
 // Include

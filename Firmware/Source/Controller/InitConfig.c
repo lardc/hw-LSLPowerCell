@@ -1,4 +1,4 @@
-#include "InitConfig.h"
+п»ї#include "InitConfig.h"
 #include "Board.h"
 #include "SysConfig.h"
 #include "BCCIxParams.h"
@@ -24,21 +24,21 @@ void INITCFG_ConfigDAC()
 
 void INITCFG_ConfigIO()
 {
-	// Включение тактирования портов
+	// Р’РєР»СЋС‡РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ РїРѕСЂС‚РѕРІ
 	RCC_GPIO_Clk_EN(PORTA);
 	RCC_GPIO_Clk_EN(PORTB);
 	
-	// Выходы
+	// Р’С‹С…РѕРґС‹
 	GPIO_InitPushPullOutput(GPIO_FAN);
 	GPIO_InitPushPullOutput(GPIO_PS_CTRL);
 	GPIO_InitPushPullOutput(GPIO_IFB_R0);
 	GPIO_InitPushPullOutput(GPIO_IFB_R1);
 	GPIO_InitPushPullOutput(GPIO_LED);
 
-	// Выходы OpenDrain
+	// Р’С‹С…РѕРґС‹ OpenDrain
 	GPIO_InitOpenDrainOutput(GPIO_SYNC_CTRL, NoPull);
 
-	// Начальная установка состояний выводов
+	// РќР°С‡Р°Р»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёР№ РІС‹РІРѕРґРѕРІ
 	GPIO_SetState(GPIO_FAN, false);
 	GPIO_SetState(GPIO_PS_CTRL, false);
 	GPIO_SetState(GPIO_SYNC_CTRL, true);
@@ -46,7 +46,7 @@ void INITCFG_ConfigIO()
 	GPIO_SetState(GPIO_IFB_R1, false);
 	GPIO_SetState(GPIO_LED, false);
 
-	// Альтернативные функции
+	// РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅС‹Рµ С„СѓРЅРєС†РёРё
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_CAN_TX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_UART1_RX, AltFn_7);
@@ -140,14 +140,14 @@ void INITCFG_ConfigDMA()
 	DMA_Clk_Enable(DMA1_ClkEN);
 	DMA_Clk_Enable(DMA2_ClkEN);
 
-	// DMA для АЦП напряжения батареи
+	// DMA РґР»СЏ РђР¦Рџ РЅР°РїСЂСЏР¶РµРЅРёСЏ Р±Р°С‚Р°СЂРµРё
 	DMA_Reset(DMA_ADC_V_BAT_CHANNEL);
 	DMAChannelX_Config(DMA_ADC_V_BAT_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
 							DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);
 	DMAChannelX_DataConfig(DMA_ADC_V_BAT_CHANNEL, (uint32_t)(&MEASURE_ADC_BatteryVoltageRaw[0]), (uint32_t)(&ADC1->DR), ADC_DMA_BUFF_SIZE);
 	DMA_ChannelEnable(DMA_ADC_V_BAT_CHANNEL, true);
 
-	// DMA для АЦП тока
+	// DMA РґР»СЏ РђР¦Рџ С‚РѕРєР°
 	DMA_Reset(DMA_ADC_CURRENT_CHANNEL);
 	DMAChannelX_Config(DMA_ADC_CURRENT_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
 							DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);

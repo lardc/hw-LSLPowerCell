@@ -1,4 +1,4 @@
-// Header
+п»ї// Header
 //
 #include "Regulator.h"
 #include "DataTable.h"
@@ -29,14 +29,14 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp +Qi;
 
-	// Выбор источника данных для записи в ЦАП
+	// Р’С‹Р±РѕСЂ РёСЃС‚РѕС‡РЅРёРєР° РґР°РЅРЅС‹С… РґР»СЏ Р·Р°РїРёСЃРё РІ Р¦РђРџ
 	float ValueToDAC;
 	if(Regulator->DebugMode)
 		ValueToDAC = Regulator->CurrentTable[Regulator->RegulatorPulseCounter];
 	else
 		ValueToDAC = CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange);
 
-	// Проверка границ диапазона ЦАП
+	// РџСЂРѕРІРµСЂРєР° РіСЂР°РЅРёС† РґРёР°РїР°Р·РѕРЅР° Р¦РђРџ
 	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(ValueToDAC, Regulator->DACOffset, Regulator->DACLimitValue);
 	LL_WriteDAC(Regulator->DACSetpoint);
 
@@ -70,7 +70,7 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 {
 	static Int16U ScopeLogStep = 0, LocalCounter = 0;
 
-	// Сброс локального счетчика в начале логгирования
+	// РЎР±СЂРѕСЃ Р»РѕРєР°Р»СЊРЅРѕРіРѕ СЃС‡РµС‚С‡РёРєР° РІ РЅР°С‡Р°Р»Рµ Р»РѕРіРіРёСЂРѕРІР°РЅРёСЏ
 	if (CONTROL_Values_Counter == 0)
 		LocalCounter = 0;
 
@@ -89,11 +89,11 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 		++LocalCounter;
 	}
 
-	// Условие обновления глобального счетчика данных
+	// РЈСЃР»РѕРІРёРµ РѕР±РЅРѕРІР»РµРЅРёСЏ РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ СЃС‡РµС‚С‡РёРєР° РґР°РЅРЅС‹С…
 	if (CONTROL_Values_Counter < VALUES_x_SIZE)
 		CONTROL_Values_Counter = LocalCounter;
 
-	// Сброс локального счетчика
+	// РЎР±СЂРѕСЃ Р»РѕРєР°Р»СЊРЅРѕРіРѕ СЃС‡РµС‚С‡РёРєР°
 	if (LocalCounter >= VALUES_x_SIZE)
 		LocalCounter = 0;
 }
@@ -101,7 +101,7 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 
 void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
 {
-	// Кеширование коэффициентов регулятора
+	// РљРµС€РёСЂРѕРІР°РЅРёРµ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ СЂРµРіСѓР»СЏС‚РѕСЂР°
 	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
 	{
 		Regulator->Kp[i] = (float)DataTable[REG_REGULATOR_RANGE0_Kp + i * 2] / 1000;

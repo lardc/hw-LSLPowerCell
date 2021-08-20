@@ -1,4 +1,4 @@
-#ifndef __CONSTRAINTS_H
+Ôªø#ifndef __CONSTRAINTS_H
 #define __CONSTRAINTS_H
 
 // Include
@@ -18,9 +18,9 @@
 #define I_RANGE1_THRESHOLD_MAX		INT16U_MAX	// A * 10
 #define I_RANGE1_THRESHOLD_DEF		65000		// A * 10
 //
-#define V_BAT_THRESHOLD_MIN			100			// ¬ * 10
-#define V_BAT_THRESHOLD_MAX			500			// ¬ * 10
-#define V_BAT_THRESHOLD_DEF			450			// ¬ * 10
+#define V_BAT_THRESHOLD_MIN			100			// –í * 10
+#define V_BAT_THRESHOLD_MAX			500			// –í * 10
+#define V_BAT_THRESHOLD_DEF			450			// –í * 10
 //
 #define DAC_OUTPUT_LIM_MIN			0
 #define DAC_OUTPUT_LIM_MAX			4095
@@ -30,21 +30,21 @@
 #define DAC_OFFSET_MAX				4095
 #define DAC_OFFSET_DEF				1300
 //
-#define FULL_CHARGE_TIMEOUT_MIN		30000		// ÏÒ
-#define FULL_CHARGE_TIMEOUT_MAX		60000		// ÏÒ
-#define FULL_CHARGE_TIMEOUT_DEF		50000		// ÏÒ
+#define FULL_CHARGE_TIMEOUT_MIN		30000		// –º—Å
+#define FULL_CHARGE_TIMEOUT_MAX		60000		// –º—Å
+#define FULL_CHARGE_TIMEOUT_DEF		50000		// –º—Å
 //
-#define RECHARGE_TIMEOUT_MIN		0			// ÏÒ
-#define RECHARGE_TIMEOUT_MAX		40000		// ÏÒ
-#define RECHARGE_TIMEOUT_DEF		20000		// ÏÒ
+#define RECHARGE_TIMEOUT_MIN		0			// –º—Å
+#define RECHARGE_TIMEOUT_MAX		40000		// –º—Å
+#define RECHARGE_TIMEOUT_DEF		20000		// –º—Å
 //
-#define SHUNT_RESISTANCE_MIN		0			// ÏÍŒÏ
-#define SHUNT_RESISTANCE_MAX		5000		// ÏÍŒÏ
-#define SHUNT_RESISTANCE_DEF		250			// ÏÍŒÏ
+#define SHUNT_RESISTANCE_MIN		0			// –º–∫–û–º
+#define SHUNT_RESISTANCE_MAX		5000		// –º–∫–û–º
+#define SHUNT_RESISTANCE_DEF		250			// –º–∫–û–º
 //
-#define AFTER_PULSE_PAUSE_MIN		0			// ÏÒ
-#define AFTER_PULSE_PAUSE_MAX		40000		// ÏÒ
-#define AFTER_PULSE_PAUSE_DEF		15000		// ÏÒ
+#define AFTER_PULSE_PAUSE_MIN		0			// –º—Å
+#define AFTER_PULSE_PAUSE_MAX		40000		// –º—Å
+#define AFTER_PULSE_PAUSE_DEF		15000		// –º—Å
 //
 #define I_PER_CURBOARD_MIN			500			// A * 10
 #define I_PER_CURBOARD_MAX			15000		// A * 10
@@ -74,28 +74,28 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-#define CURRENT_SETPOINT_MIN		0			// (¿ * 10)
-#define CURRENT_SETPOINT_MAX		65000		// (¿ * 10)
+#define CURRENT_SETPOINT_MIN		0			// (–ê * 10)
+#define CURRENT_SETPOINT_MAX		65000		// (–ê * 10)
 //
-#define FAN_PERIOD_MIN				0			// ÒÂÍ
-#define FAN_PERIOD_MAX				600			// ÒÂÍ
-#define FAN_PERIOD_DEF				300			// ÒÂÍ
+#define FAN_PERIOD_MIN				0			// —Å–µ–∫
+#define FAN_PERIOD_MAX				600			// —Å–µ–∫
+#define FAN_PERIOD_DEF				300			// —Å–µ–∫
 //
-#define FAN_TIME_MIN				0			// ÒÂÍ
-#define FAN_TIME_MAX				600			// ÒÂÍ
-#define FAN_TIME_DEF				60			// ÒÂÍ
+#define FAN_TIME_MIN				0			// —Å–µ–∫
+#define FAN_TIME_MAX				600			// —Å–µ–∫
+#define FAN_TIME_DEF				60			// —Å–µ–∫
 //
 #define V_BAT_K_MIN					0
 #define V_BAT_K_MAX					INT16U_MAX
 #define V_BAT_K_DEF					13400
 //
-#define CONF_STATE_TIMEOUT_MIN		1000		// ÏÒ
-#define CONF_STATE_TIMEOUT_MAX		10000		// ÏÒ
-#define CONF_STATE_TIMEOUT_DEF		5000		// ÏÒ
+#define CONF_STATE_TIMEOUT_MIN		1000		// –º—Å
+#define CONF_STATE_TIMEOUT_MAX		10000		// –º—Å
+#define CONF_STATE_TIMEOUT_DEF		5000		// –º—Å
 
-#define POINT_OF_LIN_MIN			100			// Û.Â.
-#define POINT_OF_LIN_MAX			200			// Û.Â.
-#define POINT_OF_LIN_DEF			120			// Û.Â.
+#define POINT_OF_LIN_MIN			100			// —É.–µ.
+#define POINT_OF_LIN_MAX			200			// —É.–µ.
+#define POINT_OF_LIN_DEF			120			// —É.–µ.
 
 // Types
 typedef struct __TableItemConstraint

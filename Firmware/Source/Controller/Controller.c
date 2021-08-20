@@ -1,4 +1,4 @@
-// Header
+п»ї// Header
 #include "Controller.h"
 //
 // Includes
@@ -60,7 +60,7 @@ bool CONTROL_BatteryVoltageCheck();
 //
 void CONTROL_Init()
 {
-	// Переменные для конфигурации EndPoint
+	// РџРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ РєРѕРЅС„РёРіСѓСЂР°С†РёРё EndPoint
 	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR, EP_CUR_TABLE,
 			EP_DAC_RAW_DATA};
 
@@ -75,15 +75,15 @@ void CONTROL_Init()
 			(pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr, (pInt16U)CONTROL_CurentTable,
 			(pInt16U)CONTROL_DACRawData};
 
-	// Конфигурация сервиса работы Data-table и EPROM
+	// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЃРµСЂРІРёСЃР° СЂР°Р±РѕС‚С‹ Data-table Рё EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
-	// Инициализация data table
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ data table
 	DT_Init(EPROMService, false);
 	DT_SaveFirmwareInfo(CAN_SLAVE_NID, 0);
-	// Инициализация device profile
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
 	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
-	// Сброс значений
+	// РЎР±СЂРѕСЃ Р·РЅР°С‡РµРЅРёР№
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
 
@@ -335,7 +335,7 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 
 	Int16U TopIndex = CURRENT_PULSE_WIDTH / TIMER15_uS / 2;
 
-	// Поиск стартового индекса
+	// РџРѕРёСЃРє СЃС‚Р°СЂС‚РѕРІРѕРіРѕ РёРЅРґРµРєСЃР°
 	Int16U StartIndex = TopIndex;
 	for (int i = TopIndex; i < PULSE_BUFFER_SIZE; ++i)
 	{
@@ -346,7 +346,7 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 		}
 	}
 
-	// Дописываем плавно спадающий хвост
+	// Р”РѕРїРёСЃС‹РІР°РµРј РїР»Р°РІРЅРѕ СЃРїР°РґР°СЋС‰РёР№ С…РІРѕСЃС‚
 	float DecreaseStep = (StartCurrent - StopCurrent) / (PULSE_BUFFER_SIZE - StartIndex);
 	for (int i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
 	{
@@ -408,11 +408,11 @@ void CONTROL_HandleFanLogic(bool IsImpulse)
 
 	if(DataTable[REG_FAN_CTRL])
 	{
-		// Увеличение счётчика в простое
+		// РЈРІРµР»РёС‡РµРЅРёРµ СЃС‡С‘С‚С‡РёРєР° РІ РїСЂРѕСЃС‚РѕРµ
 		if (!IsImpulse)
 			IncrementCounter++;
 
-		// Включение вентилятора
+		// Р’РєР»СЋС‡РµРЅРёРµ РІРµРЅС‚РёР»СЏС‚РѕСЂР°
 		if ((IncrementCounter > ((uint32_t)DataTable[REG_FAN_OPERATE_PERIOD] * 1000)) || IsImpulse)
 		{
 			IncrementCounter = 0;
@@ -420,7 +420,7 @@ void CONTROL_HandleFanLogic(bool IsImpulse)
 			LL_Fan(true);
 		}
 
-		// Отключение вентилятора
+		// РћС‚РєР»СЋС‡РµРЅРёРµ РІРµРЅС‚РёР»СЏС‚РѕСЂР°
 		if (FanOnTimeout && (CONTROL_TimeCounter > FanOnTimeout))
 		{
 			FanOnTimeout = 0;
