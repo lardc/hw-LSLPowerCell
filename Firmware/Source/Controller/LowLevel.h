@@ -1,4 +1,4 @@
-#ifndef __LOWLEVEL_H
+﻿#ifndef __LOWLEVEL_H
 #define __LOWLEVEL_H
 
 // Include

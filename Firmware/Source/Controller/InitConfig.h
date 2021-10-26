@@ -1,4 +1,4 @@
-#ifndef __INITCONFIG_H
+﻿#ifndef __INITCONFIG_H
 #define __INITCONFIG_H
 
 #include "stdinc.h"

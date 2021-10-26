@@ -1,4 +1,4 @@
-#ifndef CONVERTUTILS_H_
+﻿#ifndef CONVERTUTILS_H_
 #define CONVERTUTILS_H_
 
 // Includes

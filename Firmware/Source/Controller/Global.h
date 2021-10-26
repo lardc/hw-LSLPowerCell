@@ -1,22 +1,22 @@
-#ifndef __GLOBAL_H
+п»ї#ifndef __GLOBAL_H
 #define __GLOBAL_H
 
 // Definitions
 // 
-#define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
-#define EP_WRITE_COUNT							0		// Количество массивов для записи
-#define EP_COUNT								4		// Количество массивов для чтения
-#define VALUES_x_SIZE							300		// Размер массивов
-#define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
-#define CURRENT_PULSE_WIDTH						10000	// Длительность импульса тока (мкс)
-#define PI										3.1416f	// Значение числа Пи
-#define DAC_MAX_VAL								0x0FFF	// Максимальное значение ЦАП
-#define	CURRENT_RANGE_QUANTITY					3		// Количество диапазонов измерения тока
-#define CURRENT_RANGE_0							0		// Диапазон 0
-#define CURRENT_RANGE_1							1		// Диапазон 1
-#define CURRENT_RANGE_2							2		// Диапазон 2
+#define	SCCI_TIMEOUT_TICKS						1000	// РўР°Р№РјР°СѓС‚ РёРЅС‚РµСЂС„РµР№СЃР° SCCI (РІ РјСЃ)
+#define EP_WRITE_COUNT							0		// РљРѕР»РёС‡РµСЃС‚РІРѕ РјР°СЃСЃРёРІРѕРІ РґР»СЏ Р·Р°РїРёСЃРё
+#define EP_COUNT								4		// РљРѕР»РёС‡РµСЃС‚РІРѕ РјР°СЃСЃРёРІРѕРІ РґР»СЏ С‡С‚РµРЅРёСЏ
+#define VALUES_x_SIZE							300		// Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІРѕРІ
+#define ENABLE_LOCKING							FALSE	// Р—Р°С‰РёС‚Р° NV СЂРµРіРёСЃС‚СЂРѕРІ РїР°СЂРѕР»РµРј
+#define CURRENT_PULSE_WIDTH						10000	// Р”Р»РёС‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРїСѓР»СЊСЃР° С‚РѕРєР° (РјРєСЃ)
+#define PI										3.1416f	// Р—РЅР°С‡РµРЅРёРµ С‡РёСЃР»Р° РџРё
+#define DAC_MAX_VAL								0x0FFF	// РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ Р¦РђРџ
+#define	CURRENT_RANGE_QUANTITY					3		// РљРѕР»РёС‡РµСЃС‚РІРѕ РґРёР°РїР°Р·РѕРЅРѕРІ РёР·РјРµСЂРµРЅРёСЏ С‚РѕРєР°
+#define CURRENT_RANGE_0							0		// Р”РёР°РїР°Р·РѕРЅ 0
+#define CURRENT_RANGE_1							1		// Р”РёР°РїР°Р·РѕРЅ 1
+#define CURRENT_RANGE_2							2		// Р”РёР°РїР°Р·РѕРЅ 2
 
-// Временные параметры
-#define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
+// Р’СЂРµРјРµРЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
+#define TIME_LED_BLINK							500		// РњРёРіР°РЅРёРµ СЃРІРµС‚РѕРґРёРѕРґРѕРј (РІ РјСЃ)
 
 #endif //  __GLOBAL_H

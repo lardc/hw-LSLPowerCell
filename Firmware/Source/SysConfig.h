@@ -1,4 +1,4 @@
-#ifndef __SYSCONFIG_H
+п»ї#ifndef __SYSCONFIG_H
 #define __SYSCONFIG_H
 
 
@@ -9,31 +9,31 @@
 //-----------------------------------------------
 
 // System clock
-#define SYSCLK							70000000	// Тактовая частота системной шины процессора
-#define QUARTZ_FREQUENCY				20000000	// Частота кварца
+#define SYSCLK							70000000	// РўР°РєС‚РѕРІР°СЏ С‡Р°СЃС‚РѕС‚Р° СЃРёСЃС‚РµРјРЅРѕР№ С€РёРЅС‹ РїСЂРѕС†РµСЃСЃРѕСЂР°
+#define QUARTZ_FREQUENCY				20000000	// Р§Р°СЃС‚РѕС‚Р° РєРІР°СЂС†Р°
 // ----------------------------------------------
 
 // USART
-#define USART_BAUDRATE					115200		// Скорость USART
-#define USART_FIFOlen					32			// Длина FIFO USART
+#define USART_BAUDRATE					115200		// РЎРєРѕСЂРѕСЃС‚СЊ USART
+#define USART_FIFOlen					32			// Р”Р»РёРЅР° FIFO USART
 // ----------------------------------------------
 
 // Timers
-#define TIMER15_uS						50			// в мкс
-#define TIMER7_uS						1000		// в мкс
-#define TIMER6_uS						10			// в мкс
+#define TIMER15_uS						50			// РІ РјРєСЃ
+#define TIMER7_uS						1000		// РІ РјРєСЃ
+#define TIMER6_uS						10			// РІ РјРєСЃ
 // ----------------------------------------------
 
 // CAN
-#define CAN_BAUDRATE					1000000		// Битрейт CAN
+#define CAN_BAUDRATE					1000000		// Р‘РёС‚СЂРµР№С‚ CAN
 // ----------------------------------------------
 
 // ADC
-#define DMA_ADC_CURRENT_CHANNEL			DMA2_Channel5	// Канал DMA для АЦП тока
-#define DMA_ADC_V_BAT_CHANNEL			DMA1_Channel1	// Канал DMA для АЦП напряжения батареи
-#define ADC1_V_BAT_CHANNEL				4				// АЦП1 номер канала напряжения
-#define ADC3_CURRENT_CHANNEL			5				// АЦП1 номер канала тока
-#define ADC_DMA_BUFF_SIZE				5				// Количество данных для DMA
+#define DMA_ADC_CURRENT_CHANNEL			DMA2_Channel5	// РљР°РЅР°Р» DMA РґР»СЏ РђР¦Рџ С‚РѕРєР°
+#define DMA_ADC_V_BAT_CHANNEL			DMA1_Channel1	// РљР°РЅР°Р» DMA РґР»СЏ РђР¦Рџ РЅР°РїСЂСЏР¶РµРЅРёСЏ Р±Р°С‚Р°СЂРµРё
+#define ADC1_V_BAT_CHANNEL				4				// РђР¦Рџ1 РЅРѕРјРµСЂ РєР°РЅР°Р»Р° РЅР°РїСЂСЏР¶РµРЅРёСЏ
+#define ADC3_CURRENT_CHANNEL			5				// РђР¦Рџ1 РЅРѕРјРµСЂ РєР°РЅР°Р»Р° С‚РѕРєР°
+#define ADC_DMA_BUFF_SIZE				5				// РљРѕР»РёС‡РµСЃС‚РІРѕ РґР°РЅРЅС‹С… РґР»СЏ DMA
 // ----------------------------------------------
 
 #endif // __SYSCONFIG_H

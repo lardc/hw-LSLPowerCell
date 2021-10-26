@@ -1,4 +1,4 @@
-// Header
+ï»¿// Header
 #include "Controller.h"
 //
 // Includes
@@ -16,7 +16,7 @@
 
 // Definitions
 //
-#define CURRENT_BOARD_LOCK_DELAY			500	// Çàäåðæêà áëîêèðîâêè CurrentBoard, ìêñ
+#define CURRENT_BOARD_LOCK_DELAY			500	// Ð—Ð°Ð´ÐµÑ€Ð¶ÐºÐ° Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ¸ CurrentBoard, Ð¼ÐºÑ
 
 // Types
 //
@@ -60,21 +60,21 @@ bool CONTROL_BatteryVoltageCheck();
 //
 void CONTROL_Init()
 {
-	// Ïåðåìåííûå äëÿ êîíôèãóðàöèè EndPoint
+	// ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ Ð´Ð»Ñ ÐºÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸Ð¸ EndPoint
 	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR};
 	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
 	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
 	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage, (pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr};
 
-	// Êîíôèãóðàöèÿ ñåðâèñà ðàáîòû Data-table è EPROM
+	// ÐšÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸Ñ ÑÐµÑ€Ð²Ð¸ÑÐ° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Data-table Ð¸ EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
-	// Èíèöèàëèçàöèÿ data table
+	// Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ data table
 	DT_Init(EPROMService, false);
 	DT_SaveFirmwareInfo(CAN_SALVE_NID, 0);
-	// Èíèöèàëèçàöèÿ device profile
+	// Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
 	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
-	// Ñáðîñ çíà÷åíèé
+	// Ð¡Ð±Ñ€Ð¾Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
 
@@ -358,11 +358,11 @@ void CONTROL_HandleFanLogic(bool IsImpulse)
 
 	if(DataTable[REG_FAN_CTRL])
 	{
-		// Óâåëè÷åíèå ñ÷¸ò÷èêà â ïðîñòîå
+		// Ð£Ð²ÐµÐ»Ð¸Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡Ñ‘Ñ‚Ñ‡Ð¸ÐºÐ° Ð² Ð¿Ñ€Ð¾ÑÑ‚Ð¾Ðµ
 		if (!IsImpulse)
 			IncrementCounter++;
 
-		// Âêëþ÷åíèå âåíòèëÿòîðà
+		// Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð²ÐµÐ½Ñ‚Ð¸Ð»ÑÑ‚Ð¾Ñ€Ð°
 		if ((IncrementCounter > ((uint32_t)DataTable[REG_FAN_OPERATE_PERIOD] * 1000)) || IsImpulse)
 		{
 			IncrementCounter = 0;
@@ -370,7 +370,7 @@ void CONTROL_HandleFanLogic(bool IsImpulse)
 			LL_Fan(true);
 		}
 
-		// Îòêëþ÷åíèå âåíòèëÿòîðà
+		// ÐžÑ‚ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð²ÐµÐ½Ñ‚Ð¸Ð»ÑÑ‚Ð¾Ñ€Ð°
 		if (FanOnTimeout && (CONTROL_TimeCounter > FanOnTimeout))
 		{
 			FanOnTimeout = 0;
