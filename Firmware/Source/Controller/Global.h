@@ -7,11 +7,13 @@
 // 
 #define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
+
 #define EP_COUNT								6		// Количество массивов для чтения
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 #define CURRENT_PULSE_WIDTH						10000	// Длительность импульса тока (мкс)
 #define CURRENT_PULSE_TAIL						5000	// Длительность хвоста импульса тока (мкс)
 #define CURRENT_TAIL_START_CURR					30.0f	// Амплитуда тока для начала формирования хвоста (А)
+
 #define PI										3.1416f	// Значение числа Пи
 #define DAC_MAX_VAL								0x0FFF	// Максимальное значение ЦАП
 #define	CURRENT_RANGE_QUANTITY					3		// Количество диапазонов измерения тока

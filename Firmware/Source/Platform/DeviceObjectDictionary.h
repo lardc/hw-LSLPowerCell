@@ -42,9 +42,6 @@
 #define REG_FAN_OPERATE_TIME			14	// Время включенного состояния вентилятора (сек)
 #define REG_DAC_OFFSET					15	// Смещение сигнала с ЦАП
 #define REG_CONFIG_READY_STATE_TIMEOUT	16	// Таймаут нахождения блока в состоянии DS_ConfigReady
-// 17
-// 18
-#define REG_POINT_OF_START_LINEAR_FALL	19	// Точка формирования спада, у.е.
 
 #define REG_I_TO_DAC_RANGE0_K			20	// Диапазон 0 - Коэффициент пересчета в значение ЦАП
 #define REG_I_TO_DAC_RANGE0_B			21	// Диапазон 0 - Смещение пересчета в значение ЦАП
@@ -87,8 +84,12 @@
 #define REG_REGULATOR_RANGE1_Ki			52	// Диапазон 1 - Интегральный коэффициент регулятора
 #define REG_REGULATOR_RANGE2_Kp			53	// Диапазон 2 - Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_RANGE2_Ki			54	// Диапазон 2 - Интегральный коэффициент регулятора
+//
+#define REG_REGULATOR_TF_Ki_RANG0		55	// Диапазон 0 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dI) * 1000)
+#define REG_REGULATOR_TF_Ki_RANG1		56	// Диапазон 1 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dI) * 1000)
+#define REG_REGULATOR_TF_Ki_RANG2		57	// Диапазон 2 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dI) * 1000)
 
-// Несохраняемы регистры чтения-записи
+// Несохраняемые регистры чтения-записи
 #define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)
 #define REG_USE_LINEAR_DOWN				130	// Спад тока идёт по линейному закону
 
