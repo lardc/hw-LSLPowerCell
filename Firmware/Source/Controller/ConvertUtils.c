@@ -20,30 +20,17 @@ typedef struct __ConvertParams
 ConvertParams AdcToVoltageParams;
 ConvertParams AdcToCurrentParams[CURRENT_RANGE_QUANTITY];
 ConvertParams CurrentToDacParams[CURRENT_RANGE_QUANTITY];
-//
 
 // Functions prototypes
 float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients);
 
-
 // Functions
 //
-Int16U CU_ItoDAC(float Current, Int16U CurrentRange)
+float CU_ItoDAC(float Current, Int16U CurrentRange)
 {
 	// Пересчет амплитуды тока в расчете на одну CurrentBoard
 	Current = Current / DataTable[REG_CURBOARD_QUANTITY];
-
-	float DACValue = (Current + CurrentToDacParams[CurrentRange].B) * CurrentToDacParams[CurrentRange].K;
-
-	if(DACValue < 0)
-		DACValue = 0;
-	else if(DACValue > DAC_MAX_VAL)
-		DACValue = DAC_MAX_VAL;
-
-	if(DACValue > (DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] - DataTable[REG_DAC_OFFSET]))
-		DACValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] - DataTable[REG_DAC_OFFSET];
-
-	return (Int16U)DACValue;
+	return (Current + CurrentToDacParams[CurrentRange].B) * CurrentToDacParams[CurrentRange].K;
 }
 //-----------------------------
 

@@ -8,6 +8,7 @@
 // Functions prototypes
 //
 void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator);
+Int16U REGULATOR_DACApplyLimits(float Value, Int16U Offset, Int16U LimitValue);
 
 // Functions
 //
@@ -17,27 +18,30 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	Regulator->RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[Regulator->RegulatorPulseCounter] - Regulator->MeasuredCurrent);
 
+	Qp = Regulator->RegulatorError * Regulator->Kp[Regulator->CurrentRange];
 	Qi += Regulator->RegulatorError * (Regulator->Ki[Regulator->CurrentRange] + Regulator->KiTune[Regulator->CurrentRange]);
 
-	if(Qi > DataTable[REG_REGULATOR_QI_MAX])
-		Qi = DataTable[REG_REGULATOR_QI_MAX];
+	float Qi_max = (float)DataTable[REG_REGULATOR_QI_MAX];
+	if(Qi > Qi_max)
+		Qi = Qi_max;
+	else if (Qi < -Qi_max)
+		Qi = -Qi_max;
 
-	if(Qi < (-1) * DataTable[REG_REGULATOR_QI_MAX])
-		Qi = (-1) * DataTable[REG_REGULATOR_QI_MAX];
+	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp + Qi;
 
-	Qp = Regulator->RegulatorError * Regulator->Kp[Regulator->CurrentRange];
-
-	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp +Qi;
-
+	// Выбор источника данных для записи в ЦАП
+	float ValueToDAC;
 	if(Regulator->DebugMode)
-		LL_WriteDAC(Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Regulator->DACOffset);
+		ValueToDAC = Regulator->CurrentTable[Regulator->RegulatorPulseCounter];
 	else
-		LL_WriteDAC(CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange) + Regulator->DACOffset);
+		ValueToDAC = CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange);
+
+	// Проверка границ диапазона ЦАП
+	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(ValueToDAC, Regulator->DACOffset, Regulator->DACLimitValue);
+	LL_WriteDAC(Regulator->DACSetpoint);
 
 	REGULATOR_LoggingData(Regulator);
-
 	Regulator->RegulatorPulseCounter++;
-
 	if(Regulator->RegulatorPulseCounter >= PULSE_BUFFER_SIZE)
 	{
 		Regulator->DebugMode = false;
@@ -47,6 +51,18 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	}
 	else
 		return false;
+}
+//-----------------------------------------------
+
+Int16U REGULATOR_DACApplyLimits(float Value, Int16U Offset, Int16U LimitValue)
+{
+	Int16S Result = (Int16S)(Value + Offset);
+	if (Result < 0)
+		return 0;
+	else if (Result > LimitValue)
+		return LimitValue;
+	else
+		return Result;
 }
 //-----------------------------------------------
 
@@ -64,8 +80,9 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 
 		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Regulator->MeasuredCurrent);
 		CONTROL_RegulatorErr[LocalCounter] = (Int16S)(Regulator->RegulatorError);
-		CONTROL_RegulatorOutput[LocalCounter] = (Int16U)(Regulator->RegulatorOutput);
+		CONTROL_RegulatorOutput[LocalCounter] = (Int16S)(Regulator->RegulatorOutput);
 		CONTROL_ValuesBatteryVoltage[LocalCounter] = (Int16U)(Regulator->MeasuredBatteryVoltage * 10);
+		CONTROL_DACRawData[LocalCounter] = (Int16U)(Regulator->DACSetpoint);
 
 		CONTROL_Values_Counter = LocalCounter;
 
@@ -97,7 +114,7 @@ void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
 
 	Regulator->DebugMode = false;
 	Regulator->DACOffset = DataTable[REG_DAC_OFFSET];
+	Regulator->DACLimitValue = (DAC_MAX_VAL > DataTable[REG_DAC_OUTPUT_LIMIT_VALUE]) ? \
+			DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] : DAC_MAX_VAL;
 }
 //-----------------------------------------------
-
-

@@ -9,7 +9,7 @@
 
 // Definitions
 //
-#define PULSE_BUFFER_SIZE	CURRENT_PULSE_WIDTH / TIMER15_uS
+#define PULSE_BUFFER_SIZE	VALUES_x_SIZE
 
 // Structs
 //
@@ -28,6 +28,8 @@ typedef struct __RegulatorParams
 	Int16U RegulatorPulseCounter;
 	float RegulatorOutput;
 	Int16U DACOffset;
+	Int16U DACLimitValue;
+	Int16U DACSetpoint;
 }RegulatorParamsStruct;
 
 // Functions

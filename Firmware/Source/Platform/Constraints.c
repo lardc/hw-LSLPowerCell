@@ -27,7 +27,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{CONF_STATE_TIMEOUT_MIN, CONF_STATE_TIMEOUT_MAX, CONF_STATE_TIMEOUT_DEF},	// 16
 		{0, 0, 0},																	// 17
 		{0, 0, 0},																	// 18
-		{0, 0, 0},																	// 19
+		{POINT_OF_LIN_MIN, POINT_OF_LIN_MAX, POINT_OF_LIN_DEF},						// 19
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 20
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 21
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 22
@@ -141,7 +141,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START] = {
 		{CURRENT_SETPOINT_MIN, CURRENT_SETPOINT_MAX, 0},							// 128
 		{0, 0, 0},																	// 129
-		{0, 0, 0},																	// 130
+		{NO, YES, NO},																// 130
 		{0, 0, 0},																	// 131
 		{0, 0, 0},																	// 132
 		{0, 0, 0},																	// 133

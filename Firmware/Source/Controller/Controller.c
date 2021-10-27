@@ -14,10 +14,6 @@
 #include "Measurement.h"
 #include "math.h"
 
-// Definitions
-//
-#define CURRENT_BOARD_LOCK_DELAY			500	// Задержка блокировки CurrentBoard, мкс
-
 // Types
 //
 typedef void (*FUNC_AsyncDelegate)();
@@ -37,10 +33,13 @@ volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
+volatile Int16U CONTROL_CurentTable[VALUES_x_SIZE];
+volatile Int16U CONTROL_DACRawData[VALUES_x_SIZE];
 //
-float 	CONTROL_CurrentMaxValue = 0;
+float CONTROL_CurrentMaxValue = 0;
 //
 volatile RegulatorParamsStruct RegulatorParams;
+static FUNC_AsyncDelegate LowPriorityHandle = NULL;
 
 /// Forward functions
 //
@@ -50,6 +49,7 @@ void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
+void CONTROL_PostPulseSlowSequence();
 void CONTROL_ResetOutputRegisters();
 bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartPrepare();
@@ -61,16 +61,26 @@ bool CONTROL_BatteryVoltageCheck();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR};
-	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
-	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
-	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage, (pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr};
+	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR, EP_CUR_TABLE,
+			EP_DAC_RAW_DATA};
+
+	Int16U EPSized[EP_COUNT] =
+			{VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+
+	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+			(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+			(pInt16U)&CONTROL_Values_Counter};
+
+	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage,
+			(pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr, (pInt16U)CONTROL_CurentTable,
+			(pInt16U)CONTROL_DACRawData};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
 	// Инициализация data table
 	DT_Init(EPROMService, false);
-	DT_SaveFirmwareInfo(CAN_SALVE_NID, 0);
+	DT_SaveFirmwareInfo(CAN_SLAVE_NID, 0);
+
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
 	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
@@ -114,6 +124,12 @@ void CONTROL_Idle()
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
+
+	if(LowPriorityHandle)
+	{
+		LowPriorityHandle();
+		LowPriorityHandle = NULL;
+	}
 }
 //------------------------------------------
 
@@ -286,6 +302,8 @@ void CONTROL_StartPrepare()
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
 	CONTROL_SineConfig(&RegulatorParams);
+	CONTROL_LinearConfig(&RegulatorParams);
+	CONTROL_CopyCurrentToEP(&RegulatorParams);
 
 	MEASURE_SetCurrentRange(&RegulatorParams);
 }
@@ -305,28 +323,65 @@ void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 {
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
 	{
-		Regulator->CurrentTable[i] = Regulator->CurrentTarget * sin(PI * i / (PULSE_BUFFER_SIZE - 1));
-
-		if(Regulator->CurrentTable[i] < 0)
-			Regulator->CurrentTable[i] = 0;
+		float Setpoint = Regulator->CurrentTarget * sin(PI * i / ((CURRENT_PULSE_WIDTH / TIMER15_uS) - 1));
+		Regulator->CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
 	}
+}
+//-----------------------------------------------
+
+void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
+{
+	if(DataTable[REG_USE_LINEAR_DOWN])
+	{
+		float StartCurrent = CURRENT_TAIL_START_CURR;
+		float StopCurrent = -CURRENT_TAIL_START_CURR;
+
+		Int16U TopIndex = CURRENT_PULSE_WIDTH / TIMER15_uS / 2;
+
+		// Поиск стартового индекса
+		Int16U StartIndex = TopIndex;
+		for (int i = TopIndex; i < PULSE_BUFFER_SIZE; ++i)
+		{
+			if (Regulator->CurrentTable[i] < StartCurrent)
+			{
+				StartIndex = i;
+				break;
+			}
+		}
+
+		// Дописываем плавно спадающий хвост
+		float DecreaseStep = (StartCurrent - StopCurrent) / (PULSE_BUFFER_SIZE - StartIndex);
+		for (int i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
+		{
+			StartCurrent -= DecreaseStep;
+			Regulator->CurrentTable[i] = StartCurrent;
+		}
+	}
+}
+//-----------------------------------------------
+
+void CONTROL_CopyCurrentToEP(volatile RegulatorParamsStruct* Regulator)
+{
+	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
+		CONTROL_CurentTable[i] = (Int16S)Regulator->CurrentTable[i];
 }
 //-----------------------------------------------
 
 void CONTROL_StopProcess()
 {
-	float AfterPulseCoefficient;
-
-	LL_WriteDAC(0);
 	TIM_Stop(TIM15);
+	LowPriorityHandle = &CONTROL_PostPulseSlowSequence;
 
-	DELAY_US(CURRENT_BOARD_LOCK_DELAY);
-
-	LL_LSLCurrentBoardLock(true);
-
-	AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
+	float AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
 	CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_RECHARGE_TIMEOUT];
+}
+//------------------------------------------
+
+void CONTROL_PostPulseSlowSequence()
+{
+	LL_WriteDAC(0);
+	LL_LSLCurrentBoardLock(true);
 }
 //------------------------------------------
 
@@ -335,7 +390,6 @@ void CONTROL_ExternalInterruptProcess()
 	if (CONTROL_State == DS_ConfigReady)
 	{
 		CONTROL_SetDeviceState(DS_InProcess, SS_Pulse);
-
 		CONTROL_StartProcess();
 	}
 }

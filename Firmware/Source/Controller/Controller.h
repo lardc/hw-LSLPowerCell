@@ -39,6 +39,7 @@ extern volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
+extern volatile Int16U CONTROL_DACRawData[VALUES_x_SIZE];
 //
 extern volatile RegulatorParamsStruct RegulatorParams;
 
@@ -52,6 +53,8 @@ void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_HighPriorityProcess();
 void CONTROL_ExternalInterruptProcess();
 void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_CopyCurrentToEP(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartProcess();
 void CONTROL_HandleFanLogic(bool IsImpulse);
 

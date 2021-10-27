@@ -74,8 +74,8 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-#define CURRENT_SETPOINT_MIN		50			// (А * 10)
-#define CURRENT_SETPOINT_MAX		4500		// (А * 10)
+#define CURRENT_SETPOINT_MIN		1600			// (А * 10)
+#define CURRENT_SETPOINT_MAX		12500		// (А * 10)
 //
 #define FAN_PERIOD_MIN				0			// сек
 #define FAN_PERIOD_MAX				600			// сек
