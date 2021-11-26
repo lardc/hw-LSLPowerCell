@@ -92,6 +92,10 @@
 #define CONF_STATE_TIMEOUT_MIN		1000		// мс
 #define CONF_STATE_TIMEOUT_MAX		10000		// мс
 #define CONF_STATE_TIMEOUT_DEF		5000		// мс
+//
+#define TRAPEZ_WIDTH_MIN			5000		// мс
+#define TRAPEZ_WIDTH_MAX			10000		// мс
+#define TRAPEZ_WIDTH_DEF			10000		// мс
 
 // Types
 typedef struct __TableItemConstraint

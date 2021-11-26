@@ -16,6 +16,7 @@
 typedef struct __RegulatorParams
 {
 	Int16U CurrentRange;
+	Int16U TrapezPulseWidth;
 	float CurrentTarget;
 	float MeasuredCurrent;
 	float MeasuredBatteryVoltage;

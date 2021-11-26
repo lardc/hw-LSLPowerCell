@@ -93,6 +93,7 @@
 #define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)
 #define REG_USE_LINEAR_DOWN				130	// Спад тока идёт по линейному закону
 #define REG_USE_TRAPEZ					131	// Использовать импульс в форме трапеции
+#define REG_TRAPEZ_PULSE_WIDTH			132	// Длина полки трапеции (в мс)
 
 #define REG_DBG							150	// Регистр режима Отладки
 
@@ -108,7 +109,8 @@
 #define REG_RESULT_CURRENT				200	// Достигнутое значение импульса тока (А * 10)
 #define REG_BATTERY_VOLTAGE				201	// Напряжение на батарее конденсаторов (В * 10)
 
-#define REG_PP_DIAG						210	// Отладочный регистр паузы между импульсами
+#define REG_PULSE_TO_PULSE_PAUSE		210	// Паузы между импульсами
+#define REG_PULSE_END_FLAG				211	// Флаг окончания формирования импульса
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)

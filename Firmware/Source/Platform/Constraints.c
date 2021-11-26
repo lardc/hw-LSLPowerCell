@@ -143,7 +143,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 		{0, 0, 0},																	// 129
 		{NO, YES, NO},																// 130
 		{NO, YES, NO},																// 131
-		{0, 0, 0},																	// 132
+		{TRAPEZ_WIDTH_MIN, TRAPEZ_WIDTH_MAX, TRAPEZ_WIDTH_DEF},						// 132
 		{0, 0, 0},																	// 133
 		{0, 0, 0},																	// 134
 		{0, 0, 0},																	// 135

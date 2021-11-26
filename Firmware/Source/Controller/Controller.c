@@ -368,9 +368,11 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_TrapezConfig(volatile RegulatorParamsStruct* Regulator)
 {
+	Regulator->TrapezPulseWidth = DataTable[REG_TRAPEZ_PULSE_WIDTH];
+
 	float RizeStep = Regulator->CurrentTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
 	float FallStep = Regulator->CurrentTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
-	Int16U FallStartIndex = (TRAPEZ_RIZE_TIME + TRAPEZ_PLATE) / TIMER15_uS;
+	Int16U FallStartIndex = (TRAPEZ_RIZE_TIME + Regulator->TrapezPulseWidth * 1000) / TIMER15_uS;
 	float CurrentValue;
 
 	// Формирование нарастания и полки
@@ -408,9 +410,9 @@ void CONTROL_StopProcess()
 	// Расчёт задержки после импульса
 	float CurrentPerMOSFET = RegulatorParams.CurrentTarget / (PPD_CURR_BOARDS_NUM * PPD_MOSFETS_PER_CURR_BOARD);
 	float PowerPerMOSFET = CurrentPerMOSFET * PPD_BATTERY_VOLTAGE;
-	float PulsePause = PowerPerMOSFET * PPD_RTH_J_A * PPD_PULSE_WIDTH;
+	float PulsePause = PowerPerMOSFET * PPD_RTH_J_A * RegulatorParams.TrapezPulseWidth;
 	PulsePause /= (PPD_T_J_MAX - PPD_T_AMB_MAX - PPD_T_MARGIN - PowerPerMOSFET * PPD_ZTH_10MS);
-	DataTable[REG_PP_DIAG] = (Int16U)PulsePause;
+	DataTable[REG_PULSE_TO_PULSE_PAUSE] = (Int16U)PulsePause;
 
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + (Int16U)PulsePause;
 	CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_RECHARGE_TIMEOUT];
@@ -421,6 +423,7 @@ void CONTROL_PostPulseSlowSequence()
 {
 	LL_WriteDAC(0);
 	LL_LSLCurrentBoardLock(true);
+	DataTable[REG_PULSE_END_FLAG] = 1;
 }
 //------------------------------------------
 
@@ -436,6 +439,7 @@ void CONTROL_ExternalInterruptProcess()
 
 void CONTROL_StartProcess()
 {
+	DataTable[REG_PULSE_END_FLAG] = 0;
 	CONTROL_HandleFanLogic(true);
 
 	LL_LSLCurrentBoardLock(false);
