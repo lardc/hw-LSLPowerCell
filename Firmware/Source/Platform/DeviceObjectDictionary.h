@@ -107,6 +107,8 @@
 
 #define REG_RESULT_CURRENT				200	// Достигнутое значение импульса тока (А * 10)
 #define REG_BATTERY_VOLTAGE				201	// Напряжение на батарее конденсаторов (В * 10)
+
+#define REG_PP_DIAG						210	// Отладочный регистр паузы между импульсами
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)

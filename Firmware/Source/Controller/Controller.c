@@ -405,8 +405,14 @@ void CONTROL_StopProcess()
 	TIM_Stop(TIM15);
 	LowPriorityHandle = &CONTROL_PostPulseSlowSequence;
 
-	float AfterPulseCoefficient = RegulatorParams.CurrentTarget / CONTROL_CurrentMaxValue;
-	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE] * AfterPulseCoefficient;
+	// Расчёт задержки после импульса
+	float CurrentPerMOSFET = RegulatorParams.CurrentTarget / (PPD_CURR_BOARDS_NUM * PPD_MOSFETS_PER_CURR_BOARD);
+	float PowerPerMOSFET = CurrentPerMOSFET * PPD_BATTERY_VOLTAGE;
+	float PulsePause = PowerPerMOSFET * PPD_RTH_J_A * PPD_PULSE_WIDTH;
+	PulsePause /= (PPD_T_J_MAX - PPD_T_AMB_MAX - PPD_T_MARGIN - PowerPerMOSFET * PPD_ZTH_10MS);
+	DataTable[REG_PP_DIAG] = (Int16U)PulsePause;
+
+	CONTROL_AfterPulsePause = CONTROL_TimeCounter + (Int16U)PulsePause;
 	CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_RECHARGE_TIMEOUT];
 }
 //------------------------------------------

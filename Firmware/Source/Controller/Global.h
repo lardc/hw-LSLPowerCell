@@ -32,4 +32,18 @@
 #define TRAPEZ_PLATE							10000	// Длительность полки (в мкс)
 #define TRAPEZ_FALL_TIME						1000	// Длительность фронта спада (в мкс)
 
+// Параметры расчёта задержки после импульса
+#define PPD_CURR_BOARDS_NUM						2
+#define PPD_MOSFETS_PER_CURR_BOARD				40
+//
+#define PPD_BATTERY_VOLTAGE						50		// in V
+#define PPD_PULSE_WIDTH							10		// in ms
+#define PPD_RTH_J_A								40		// in C/W
+#define PPD_ZTH_10MS							0.1f	// in C/W
+//
+// in C
+#define PPD_T_J_MAX								150
+#define PPD_T_AMB_MAX							40
+#define PPD_T_MARGIN							20
+
 #endif //  __GLOBAL_H
