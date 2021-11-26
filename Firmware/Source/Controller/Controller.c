@@ -55,6 +55,7 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 bool CONTROL_BatteryVoltageCheck();
+void CONTROL_TrapezConfig(volatile RegulatorParamsStruct* Regulator);
 
 // Functions
 //
@@ -301,8 +302,13 @@ void CONTROL_StartPrepare()
 	CU_LoadConvertParams();
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
-	CONTROL_SineConfig(&RegulatorParams);
-	CONTROL_LinearConfig(&RegulatorParams);
+	if(DataTable[REG_USE_TRAPEZ])
+		CONTROL_TrapezConfig(&RegulatorParams);
+	else
+	{
+		CONTROL_SineConfig(&RegulatorParams);
+		CONTROL_LinearConfig(&RegulatorParams);
+	}
 	CONTROL_CopyCurrentToEP(&RegulatorParams);
 
 	MEASURE_SetCurrentRange(&RegulatorParams);
@@ -356,6 +362,33 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 			StartCurrent -= DecreaseStep;
 			Regulator->CurrentTable[i] = StartCurrent;
 		}
+	}
+}
+//-----------------------------------------------
+
+void CONTROL_TrapezConfig(volatile RegulatorParamsStruct* Regulator)
+{
+	float RizeStep = Regulator->CurrentTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
+	float FallStep = Regulator->CurrentTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
+	Int16U FallStartIndex = (TRAPEZ_RIZE_TIME + TRAPEZ_PLATE) / TIMER15_uS;
+	float CurrentValue;
+
+	// Формирование нарастания и полки
+	CurrentValue = 0;
+	for(Int16U i = 0; i < FallStartIndex; ++i)
+	{
+		Regulator->CurrentTable[i] =
+				(CurrentValue < Regulator->CurrentTarget) ? CurrentValue : Regulator->CurrentTarget;
+		CurrentValue += RizeStep;
+	}
+
+	// Формирование спада
+	CurrentValue = Regulator->CurrentTarget - FallStep;
+	for(Int16U i = FallStartIndex; i < PULSE_BUFFER_SIZE; ++i)
+	{
+		Regulator->CurrentTable[i] =
+				(CurrentValue > 0) ? CurrentValue : 0;
+		CurrentValue -= FallStep;
 	}
 }
 //-----------------------------------------------
