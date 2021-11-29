@@ -56,6 +56,7 @@ void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 bool CONTROL_BatteryVoltageCheck();
 void CONTROL_TrapezConfig(volatile RegulatorParamsStruct* Regulator);
+Int16U CONTROL_CalcPostPulseDelay();
 
 // Functions
 //
@@ -407,15 +408,39 @@ void CONTROL_StopProcess()
 	TIM_Stop(TIM15);
 	LowPriorityHandle = &CONTROL_PostPulseSlowSequence;
 
-	// Расчёт задержки после импульса
-	float CurrentPerMOSFET = RegulatorParams.CurrentTarget / (PPD_CURR_BOARDS_NUM * PPD_MOSFETS_PER_CURR_BOARD);
-	float PowerPerMOSFET = CurrentPerMOSFET * PPD_BATTERY_VOLTAGE;
-	float PulsePause = PowerPerMOSFET * PPD_RTH_J_A * RegulatorParams.TrapezPulseWidth;
-	PulsePause /= (PPD_T_J_MAX - PPD_T_AMB_MAX - PPD_T_MARGIN - PowerPerMOSFET * PPD_ZTH_10MS);
-	DataTable[REG_PULSE_TO_PULSE_PAUSE] = (Int16U)PulsePause;
+	Int16U PulsePause = CONTROL_CalcPostPulseDelay();
+	DataTable[REG_PULSE_TO_PULSE_PAUSE] = PulsePause;
 
-	CONTROL_AfterPulsePause = CONTROL_TimeCounter + (Int16U)PulsePause;
+	CONTROL_AfterPulsePause = CONTROL_TimeCounter + PulsePause;
 	CONTROL_BatteryChargeTimeCounter = CONTROL_TimeCounter + DataTable[REG_BATTERY_RECHARGE_TIMEOUT];
+}
+//------------------------------------------
+
+Int16U CONTROL_CalcPostPulseDelay()
+{
+	// Длительность импульса
+	float PulseWidth = (float)DataTable[REG_TRAPEZ_PULSE_WIDTH] +
+			(float)TRAPEZ_RIZE_TIME / 1000 / 2 + (float)TRAPEZ_FALL_TIME / 1000 / 2;
+
+	// Максимальная мощность на ключ
+	float MaxCurrentPerMOSFET = ((float)DataTable[REG_CURRENT_PER_CURBOARD] / 10) /
+			PPD_MOSFETS_PER_CURR_BOARD;
+	float MaxPowerPerMOSFET = MaxCurrentPerMOSFET * PPD_BATTERY_VOLTAGE;
+
+	// Рабочая мощность на ключ
+	float CurrentPerMOSFET = RegulatorParams.CurrentTarget /
+			(DataTable[REG_CURBOARD_QUANTITY] * PPD_MOSFETS_PER_CURR_BOARD);
+	float PowerPerMOSFET = CurrentPerMOSFET * PPD_BATTERY_VOLTAGE;
+
+	// Максимально допустимая средняя температура
+	float TavgMax = (float)PPD_T_J_MAX - PPD_T_AMB_MAX - PPD_T_MARGIN - MaxPowerPerMOSFET * PPD_ZTH_10MS;
+	if(TavgMax <= 0)
+		return PPD_FAULT_DELAY;
+	else
+	{
+		float Delay = PowerPerMOSFET / (TavgMax / PPD_RTH_J_A) * PulseWidth;
+		return (Delay > PPD_FAULT_DELAY) ? PPD_FAULT_DELAY : Delay;
+	}
 }
 //------------------------------------------
 
