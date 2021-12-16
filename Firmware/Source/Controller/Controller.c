@@ -418,18 +418,26 @@ void CONTROL_StopProcess()
 
 Int16U CONTROL_CalcPostPulseDelay()
 {
+	float UnitMaxCurrent = 1200;
+
 	// Длительность импульса
 	float PulseWidth = (float)DataTable[REG_TRAPEZ_PULSE_WIDTH] +
 			(float)TRAPEZ_RIZE_TIME / 1000 / 2 + (float)TRAPEZ_FALL_TIME / 1000 / 2;
 
 	// Максимальная мощность на ключ
+	/*
 	float MaxCurrentPerMOSFET = ((float)DataTable[REG_CURRENT_PER_CURBOARD] / 10) /
 			PPD_MOSFETS_PER_CURR_BOARD;
+	*/
+	float MaxCurrentPerMOSFET = (float)UnitMaxCurrent / 2 / PPD_MOSFETS_PER_CURR_BOARD;			// Временная замена
 	float MaxPowerPerMOSFET = MaxCurrentPerMOSFET * PPD_BATTERY_VOLTAGE;
 
 	// Рабочая мощность на ключ
+	/*
 	float CurrentPerMOSFET = RegulatorParams.CurrentTarget /
 			(DataTable[REG_CURBOARD_QUANTITY] * PPD_MOSFETS_PER_CURR_BOARD);
+	*/
+	float CurrentPerMOSFET = RegulatorParams.CurrentTarget / 2 / PPD_MOSFETS_PER_CURR_BOARD;	// Временная замена
 	float PowerPerMOSFET = CurrentPerMOSFET * PPD_BATTERY_VOLTAGE;
 
 	// Максимально допустимая средняя температура
