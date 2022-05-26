@@ -88,6 +88,17 @@
 #define REG_REGULATOR_TF_Ki_RANG0		55	// Диапазон 0 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dI) * 1000)
 #define REG_REGULATOR_TF_Ki_RANG1		56	// Диапазон 1 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dI) * 1000)
 #define REG_REGULATOR_TF_Ki_RANG2		57	// Диапазон 2 - Коэффициент подстройки значения Ki от тока (в ед. (dKi / dI) * 1000)
+//
+#define REG_DAC_CORR_R0_P2				60
+#define REG_DAC_CORR_R0_P1				61
+#define REG_DAC_CORR_R0_P0				62
+#define REG_DAC_CORR_R1_P2				63
+#define REG_DAC_CORR_R1_P1				64
+#define REG_DAC_CORR_R1_P0				65
+#define REG_DAC_CORR_R2_P2				66
+#define REG_DAC_CORR_R2_P1				67
+#define REG_DAC_CORR_R2_P0				68
+
 
 // Несохраняемые регистры чтения-записи
 #define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)
@@ -108,6 +119,7 @@
 
 #define REG_RESULT_CURRENT				200	// Достигнутое значение импульса тока (А * 10)
 #define REG_BATTERY_VOLTAGE				201	// Напряжение на батарее конденсаторов (В * 10)
+#define REG_ACTUAL_CURRENT_RANGE		202
 
 #define REG_PULSE_TO_PULSE_PAUSE		210	// Паузы между импульсами
 #define REG_PULSE_END_FLAG				211	// Флаг окончания формирования импульса

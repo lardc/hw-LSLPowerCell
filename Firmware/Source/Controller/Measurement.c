@@ -93,6 +93,7 @@ void MEASURE_SetCurrentRange(volatile RegulatorParamsStruct* Regulator)
 		LL_SetCurrentRange2();
 	}
 
+	DataTable[REG_ACTUAL_CURRENT_RANGE] = Regulator->CurrentRange;
 }
 //-----------------------------------------------
 

@@ -14,12 +14,20 @@ Int16U REGULATOR_DACApplyLimits(float Value, Int16U Offset, Int16U LimitValue);
 //
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 {
-	static float Qi = 0, Qp;
+	static float Qi = 0, Qp = 0;
 
 	Regulator->RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[Regulator->RegulatorPulseCounter] - Regulator->MeasuredCurrent);
 
-	Qp = Regulator->RegulatorError * Regulator->Kp[Regulator->CurrentRange];
-	Qi += Regulator->RegulatorError * (Regulator->Ki[Regulator->CurrentRange] + Regulator->KiTune[Regulator->CurrentRange]);
+	if(Regulator->RegulatorPulseCounter >= Regulator->TurnOnIndex)
+	{
+		Qp = Regulator->RegulatorError * Regulator->Kp[Regulator->CurrentRange];
+		Qi += Regulator->RegulatorError * (Regulator->Ki[Regulator->CurrentRange] + Regulator->KiTune[Regulator->CurrentRange]);
+	}
+	else
+	{
+		Qp = 0;
+		Qi = 0;
+	}
 
 	float Qi_max = (float)DataTable[REG_REGULATOR_QI_MAX];
 	if(Qi > Qi_max)
@@ -27,7 +35,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	else if (Qi < -Qi_max)
 		Qi = -Qi_max;
 
-	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp + Qi;
+	Regulator->RegulatorOutput = Regulator->CurrentCorrectionTable[Regulator->RegulatorPulseCounter] + Qp + Qi;
 
 	// Выбор источника данных для записи в ЦАП
 	float ValueToDAC;
@@ -80,7 +88,7 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 
 		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Regulator->MeasuredCurrent);
 		CONTROL_RegulatorErr[LocalCounter] = (Int16S)(Regulator->RegulatorError);
-		CONTROL_RegulatorOutput[LocalCounter] = (Int16S)(Regulator->RegulatorOutput);
+		CONTROL_RegulatorOutput[LocalCounter] = (Int16S)(Regulator->CurrentCorrectionTable[Regulator->RegulatorPulseCounter]);
 		CONTROL_ValuesBatteryVoltage[LocalCounter] = (Int16U)(Regulator->MeasuredBatteryVoltage * 10);
 		CONTROL_DACRawData[LocalCounter] = (Int16U)(Regulator->DACSetpoint);
 
@@ -116,5 +124,6 @@ void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
 	Regulator->DACOffset = DataTable[REG_DAC_OFFSET];
 	Regulator->DACLimitValue = (DAC_MAX_VAL > DataTable[REG_DAC_OUTPUT_LIMIT_VALUE]) ? \
 			DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] : DAC_MAX_VAL;
+	Regulator->TurnOnIndex = 0;
 }
 //-----------------------------------------------

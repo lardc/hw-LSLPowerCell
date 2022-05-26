@@ -303,6 +303,8 @@ void CONTROL_StartPrepare()
 	CU_LoadConvertParams();
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
+	MEASURE_SetCurrentRange(&RegulatorParams);
+
 	if(DataTable[REG_USE_TRAPEZ])
 		CONTROL_TrapezConfig(&RegulatorParams);
 	else
@@ -311,8 +313,6 @@ void CONTROL_StartPrepare()
 		CONTROL_LinearConfig(&RegulatorParams);
 	}
 	CONTROL_CopyCurrentToEP(&RegulatorParams);
-
-	MEASURE_SetCurrentRange(&RegulatorParams);
 }
 //-----------------------------------------------
 
@@ -331,7 +331,7 @@ void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
 	{
 		float Setpoint = Regulator->CurrentTarget * sin(PI * i / ((CURRENT_PULSE_WIDTH / TIMER15_uS) - 1));
-		Regulator->CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
+		Regulator->CurrentCorrectionTable[i] = Regulator->CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
 	}
 }
 //-----------------------------------------------
@@ -361,7 +361,7 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 		for (int i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
 		{
 			StartCurrent -= DecreaseStep;
-			Regulator->CurrentTable[i] = StartCurrent;
+			Regulator->CurrentCorrectionTable[i] = Regulator->CurrentTable[i] = StartCurrent;
 		}
 	}
 }
@@ -374,24 +374,43 @@ void CONTROL_TrapezConfig(volatile RegulatorParamsStruct* Regulator)
 	float RizeStep = Regulator->CurrentTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
 	float FallStep = Regulator->CurrentTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
 	Int16U FallStartIndex = (TRAPEZ_RIZE_TIME + Regulator->TrapezPulseWidth * 1000) / TIMER15_uS;
-	float CurrentValue;
+	float CurrentValue, CorrP2, CorrP1, CorrP0, CorrectionTarget, CorrectionValue, CorrRiseStep, CorrFallStep;
+
+	// Вычисление амплитуды задания коррекции мосфетов
+	CorrP2 = (float)(Int16S)DataTable[REG_DAC_CORR_R0_P2 + Regulator->CurrentRange * 3] / 1e6;
+	CorrP1 = (float)DataTable[REG_DAC_CORR_R0_P1 + Regulator->CurrentRange * 3] / 1000;
+	CorrP0 = (Int16S)DataTable[REG_DAC_CORR_R0_P0 + Regulator->CurrentRange * 3];
+	CorrectionTarget = Regulator->CurrentTarget * Regulator->CurrentTarget * CorrP2 + Regulator->CurrentTarget * CorrP1 + CorrP0;
+	CorrRiseStep = CorrectionTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
+	CorrFallStep = CorrectionTarget / (TRAPEZ_RIZE_TIME / TIMER15_uS);
 
 	// Формирование нарастания и полки
 	CurrentValue = 0;
+	CorrectionValue = 0;
+
 	for(Int16U i = 0; i < FallStartIndex; ++i)
 	{
-		Regulator->CurrentTable[i] =
-				(CurrentValue < Regulator->CurrentTarget) ? CurrentValue : Regulator->CurrentTarget;
+		Regulator->CurrentTable[i] = (CurrentValue < Regulator->CurrentTarget) ? CurrentValue : Regulator->CurrentTarget;
+		Regulator->CurrentCorrectionTable[i] = (CorrectionValue < CorrectionTarget) ? CorrectionValue : CorrectionTarget;
+
+		if(!Regulator->TurnOnIndex && CurrentValue >= Regulator->CurrentTarget)
+			Regulator->TurnOnIndex = i * 0.8;
+
 		CurrentValue += RizeStep;
+		CorrectionValue += CorrRiseStep;
 	}
 
 	// Формирование спада
 	CurrentValue = Regulator->CurrentTarget - FallStep;
+	CorrectionValue = CorrectionTarget - CorrFallStep;
+
 	for(Int16U i = FallStartIndex; i < PULSE_BUFFER_SIZE; ++i)
 	{
-		Regulator->CurrentTable[i] =
-				(CurrentValue > 0) ? CurrentValue : 0;
+		Regulator->CurrentTable[i] = (CurrentValue > 0) ? CurrentValue : 0;
+		Regulator->CurrentCorrectionTable[i] = (CorrectionValue > 0) ? CorrectionValue : 0;
+
 		CurrentValue -= FallStep;
+		CorrectionValue -= CorrFallStep;
 	}
 }
 //-----------------------------------------------

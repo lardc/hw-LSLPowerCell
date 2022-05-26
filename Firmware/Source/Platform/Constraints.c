@@ -68,15 +68,15 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{0, INT16U_MAX, 0},															// 57
 		{0, 0, 0},																	// 58
 		{0, 0, 0},																	// 59
-		{0, 0, 0},																	// 60
-		{0, 0, 0},																	// 61
-		{0, 0, 0},																	// 62
-		{0, 0, 0},																	// 63
-		{0, 0, 0},																	// 64
-		{0, 0, 0},																	// 65
-		{0, 0, 0},																	// 66
-		{0, 0, 0},																	// 67
-		{0, 0, 0},																	// 68
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 60
+		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 61
+		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 62
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 63
+		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 64
+		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 65
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 66
+		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 67
+		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 68
 		{0, 0, 0},																	// 69
 		{0, 0, 0},																	// 70
 		{0, 0, 0},																	// 71

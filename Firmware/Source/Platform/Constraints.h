@@ -18,7 +18,7 @@
 #define I_RANGE1_THRESHOLD_MAX		INT16U_MAX	// A * 10
 #define I_RANGE1_THRESHOLD_DEF		65000		// A * 10
 //
-#define V_BAT_THRESHOLD_MIN			100			// В * 10
+#define V_BAT_THRESHOLD_MIN			0			// В * 10
 #define V_BAT_THRESHOLD_MAX			500			// В * 10
 #define V_BAT_THRESHOLD_DEF			450			// В * 10
 //
@@ -47,7 +47,7 @@
 #define AFTER_PULSE_PAUSE_DEF		15000		// мс
 //
 #define I_PER_CURBOARD_MIN			500			// A * 10
-#define I_PER_CURBOARD_MAX			15000		// A * 10
+#define I_PER_CURBOARD_MAX			17000		// A * 10
 #define I_PER_CURBOARD_DEF			10833		// A * 10
 //
 #define CURBOARD_QUANTITY_MIN		1
@@ -74,8 +74,8 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-#define CURRENT_SETPOINT_MIN		1600		// (А * 10)
-#define CURRENT_SETPOINT_MAX		12500		// (А * 10)
+#define CURRENT_SETPOINT_MIN		500		// (А * 10)
+#define CURRENT_SETPOINT_MAX		50000		// (А * 10)
 //
 #define FAN_PERIOD_MIN				0			// сек
 #define FAN_PERIOD_MAX				600			// сек
