@@ -13,6 +13,7 @@
 #include "Constraints.h"
 #include "ZwNCAN.h"
 #include "ZwSCI.h"
+#include "LabelDescription.h"
 
 // Types
 //
@@ -146,35 +147,47 @@ static Boolean DEVPROFILE_Validate16(Int16U Address, Int16U Data)
 
 static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 {
-	switch (ActionID)
+	static Int32U MemoryPointer = 0;
+
+	switch(ActionID)
 	{
 		case ACT_SAVE_TO_ROM:
-			{
-				if(ENABLE_LOCKING && !UnlockedForNVWrite)
-					*UserError = ERR_WRONG_PWD;
-				else
-					DT_SaveNVPartToEPROM();
-			}
+			if(ENABLE_LOCKING && !UnlockedForNVWrite)
+				*UserError = ERR_WRONG_PWD;
+			else
+				DT_SaveNVPartToEPROM();
 			break;
+
 		case ACT_RESTORE_FROM_ROM:
-			{
-				if(ENABLE_LOCKING && !UnlockedForNVWrite)
-					*UserError = ERR_WRONG_PWD;
-				else
-					DT_RestoreNVPartFromEPROM();
-			}
+			if(ENABLE_LOCKING && !UnlockedForNVWrite)
+				*UserError = ERR_WRONG_PWD;
+			else
+				DT_RestoreNVPartFromEPROM();
 			break;
+
 		case ACT_RESET_TO_DEFAULT:
-			{
-				if(ENABLE_LOCKING && !UnlockedForNVWrite)
-					*UserError = ERR_WRONG_PWD;
-				else
-					DT_ResetNVPart(&DEVPROFILE_FillNVPartDefault);
-			}
+			if(ENABLE_LOCKING && !UnlockedForNVWrite)
+				*UserError = ERR_WRONG_PWD;
+			else
+				DT_ResetNVPart(&DEVPROFILE_FillNVPartDefault);
 			break;
+
 		case ACT_BOOT_LOADER_REQUEST:
 			BOOT_LOADER_VARIABLE = BOOT_LOADER_REQUEST;
 			break;
+
+		case ACT_WRITE_LABEL1:
+			FWLB_WriteBoardLabel(0);
+			break;
+
+		case ACT_READ_SYMBOL:
+			DataTable[REG_MEM_SYMBOL] = *(pInt16U)(MemoryPointer++);
+			break;
+
+		case ACT_SELECT_MEM_LABEL:
+			MemoryPointer = LABEL_START_ADDRESS;
+			break;
+
 		default:
 			return (ControllerDispatchFunction) ? ControllerDispatchFunction(ActionID, UserError) : FALSE;
 	}

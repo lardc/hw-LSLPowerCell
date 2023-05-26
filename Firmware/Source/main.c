@@ -1,6 +1,7 @@
 ﻿#include "Controller.h"
 #include "InitConfig.h"
 #include "SysConfig.h"
+#include "FirmwareLabel.h"
 
 int main()
 {
@@ -10,6 +11,7 @@ int main()
 	
 	// Настройка системной частоты тактирования
 	INITCFG_ConfigSystemClock();
+	FWLB_LoadBoardLabel();
 	
 	// Настройка портов
 	INITCFG_ConfigIO();

@@ -21,6 +21,9 @@
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
 
 #define ACT_BOOT_LOADER_REQUEST			320	// Перезапуск процессора с целью перепрограммирования
+#define ACT_WRITE_LABEL1				321	// Записать первую метку: LSLPowerCell v.1.2
+#define ACT_READ_SYMBOL					330	// Выполнить чтение символа из памяти
+#define ACT_SELECT_MEM_LABEL			331	// Переместить указатель считывания в область метки
 // -----------------------------
 
 // Регистры
@@ -112,7 +115,9 @@
 // 258 - 259
 #define REG_FWINFO_STR_LEN				260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN			261	// Begining of the information string record
-
+//
+#define REG_MEM_SYMBOL					299	// Считанный по адресу памяти символ
+// -----------------------------
 
 // Operation results
 #define OPRESULT_NONE					0	// No information or not finished
