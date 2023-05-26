@@ -128,7 +128,14 @@ static Boolean DEVPROFILE_Validate16(Int16U Address, Int16U Data)
 	if(ENABLE_LOCKING && !UnlockedForNVWrite && (Address < DATA_TABLE_WR_START))
 		return FALSE;
 	
-	if(Address < DATA_TABLE_WR_START)
+	if(Address == REG_CURRENT_PULSE_VALUE)
+	{
+		Int16U LowLimit = DataTable[REG_CURRENT_SETPOINT_MIN];
+		Int16U HighLimit = (DataTable[REG_CURRENT_SETPOINT_MAX] == 0) ? INT16U_MAX : DataTable[REG_CURRENT_SETPOINT_MAX];
+		
+		return LowLimit <= Data && Data <= HighLimit;
+	}
+	else if(Address < DATA_TABLE_WR_START)
 	{
 		if(Data < NVConstraint[Address - DATA_TABLE_NV_START].Min
 				|| Data > NVConstraint[Address - DATA_TABLE_NV_START].Max)
