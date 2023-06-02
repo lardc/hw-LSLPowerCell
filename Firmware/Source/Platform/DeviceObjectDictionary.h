@@ -110,7 +110,6 @@
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_SUB_STATE					198	// Регистр вспомогательного состояния
 
-#define REG_RESULT_CURRENT				200	// Достигнутое значение импульса тока (А * 10)
 #define REG_BATTERY_VOLTAGE				201	// Напряжение на батарее конденсаторов (В * 10)
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
