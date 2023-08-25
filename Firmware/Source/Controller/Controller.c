@@ -282,7 +282,7 @@ void CONTROL_HighPriorityProcess()
 		if(CONTROL_RegulatorCycle(&RegulatorParams))
 		{
 			CONTROL_StopProcess();
-			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
+			CONTROL_SetDeviceState(CONTROL_State, SS_WaitAfterPulse);
 			DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		}
 	}

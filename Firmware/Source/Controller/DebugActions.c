@@ -49,6 +49,11 @@ void DBGACT_PulseProcess(Int16U DACValue)
 	if(DACValue > DAC_MAX_VAL)
 		DACValue = DAC_MAX_VAL;
 
+	MEASURE_DMABufferClear();
+	CU_LoadConvertParams();
+	REGULATOR_CashVariables(&RegulatorParams);
+	CONTROL_CashVariables();
+
 	RegulatorParams.DebugMode = true;
 	RegulatorParams.CurrentTarget = DACValue;
 	RegulatorParams.DACOffset = DataTable[REG_DAC_OFFSET];
