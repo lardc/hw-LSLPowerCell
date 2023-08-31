@@ -298,14 +298,13 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 void CONTROL_StartPrepare()
 {
 	MEASURE_DMABufferClear();
+	MEASURE_SetCurrentRange(&RegulatorParams);
 	CU_LoadConvertParams();
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_CashVariables();
 	CONTROL_SineConfig(&RegulatorParams);
 	CONTROL_LinearConfig(&RegulatorParams);
 	CONTROL_CopyCurrentToEP(&RegulatorParams);
-
-	MEASURE_SetCurrentRange(&RegulatorParams);
 }
 //-----------------------------------------------
 
@@ -323,7 +322,8 @@ void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
 {
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
 	{
-		float Setpoint = Regulator->CurrentTarget * sin(PI * i / ((CURRENT_PULSE_WIDTH / TIMER15_uS) - 1));
+		float Setpoint = CU_ItoDAC(Regulator->CurrentTarget, Regulator->CurrentRange);
+		Setpoint = Setpoint * sin(PI * i / ((CURRENT_PULSE_WIDTH / TIMER15_uS) - 1));
 		Regulator->CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
 	}
 }

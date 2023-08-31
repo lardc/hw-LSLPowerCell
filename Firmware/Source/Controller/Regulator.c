@@ -34,7 +34,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	if(Regulator->DebugMode)
 		ValueToDAC = Regulator->CurrentTable[Regulator->RegulatorPulseCounter];
 	else
-		ValueToDAC = CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange);
+		ValueToDAC = Regulator->RegulatorOutput / DataTable[REG_CURBOARD_QUANTITY];
 
 	// Проверка границ диапазона ЦАП
 	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(ValueToDAC, Regulator->DACOffset, Regulator->DACLimitValue);
