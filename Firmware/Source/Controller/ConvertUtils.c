@@ -4,6 +4,7 @@
 #include "LowLevel.h"
 #include "DataTable.h"
 #include "Global.h"
+#include "math.h"
 
 // Structs
 typedef struct __ConvertParams
@@ -28,7 +29,7 @@ float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients);
 //
 float CU_ItoDAC(float Current, Int16U CurrentRange)
 {
-	return (Current * CurrentToDacParams[CurrentRange].K + CurrentToDacParams[CurrentRange].B);
+	return CurrentToDacParams[CurrentRange].B * powf(Current, CurrentToDacParams[CurrentRange].K);
 }
 //-----------------------------
 

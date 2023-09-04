@@ -27,13 +27,14 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	else if (Qi < -Qi_max)
 		Qi = -Qi_max;
 
-	Regulator->RegulatorOutput = Regulator->CurrentTable[Regulator->RegulatorPulseCounter] + Qp + Qi;
+	Regulator->RegulatorOutput = Regulator->CurrentCorrectionTable[Regulator->RegulatorPulseCounter] + Qp + Qi;
 
 	// Выбор источника данных для записи в ЦАП
 	float ValueToDAC;
 	if(Regulator->DebugMode)
 		ValueToDAC = Regulator->CurrentTable[Regulator->RegulatorPulseCounter];
 	else
+		// Пересчет амплитуды тока в расчете на одну CurrentBoard
 		ValueToDAC = Regulator->RegulatorOutput / DataTable[REG_CURBOARD_QUANTITY];
 
 	// Проверка границ диапазона ЦАП
