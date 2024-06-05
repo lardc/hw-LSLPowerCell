@@ -84,7 +84,7 @@ void CONTROL_Init()
 	// Инициализация функций связанных с CAN NodeID
 	Int16U NodeID = DataTable[REG_CFG_NODE_ID] ? DataTable[REG_CFG_NODE_ID] : CAN_SLAVE_NID;
 	DT_SaveFirmwareInfo(NodeID, 0);
-	INITCFG_ConfigCAN(NodeID);
+	INITCFG_ConfigCANFilters(NodeID);
 
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive, NodeID);

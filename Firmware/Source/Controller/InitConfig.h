@@ -7,7 +7,8 @@
 //
 Boolean INITCFG_ConfigSystemClock();
 void INITCFG_ConfigIO();
-void INITCFG_ConfigCAN(Int16U NodeID);
+void INITCFG_ConfigCAN();
+void INITCFG_ConfigCANFilters(Int16U NodeID);
 void INITCFG_ConfigUART();
 void INITCFG_ConfigTimer15();
 void INITCFG_ConfigTimer7();
