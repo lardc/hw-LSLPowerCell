@@ -339,7 +339,8 @@ void CONTROL_CashVariables()
 {
 	// Определение целевых значений уставки
 	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
-	RegulatorParams.CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
+	RegulatorParams.CurrentTarget = ((float)DataTable[REG_CURRENT_PULSE_VALUE]
+			+ (float)(DataTable[REG_CFG_HIGH_CURRENT_SET] ? DataTable[REG_CURRENT_PULSE_VALUE_ADD] : 0)) / 10;
 
 	if(RegulatorParams.CurrentTarget > CONTROL_CurrentMaxValue)
 		RegulatorParams.CurrentTarget = CONTROL_CurrentMaxValue;

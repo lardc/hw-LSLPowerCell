@@ -95,9 +95,11 @@
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 #define REG_CFG_CURRENT_LIMIT_MIN		61	// Минимальное задание по току (А х10)
 #define REG_CFG_CURRENT_LIMIT_MAX		62	// Максимальное задание по току (А х10)
+#define REG_CFG_HIGH_CURRENT_SET		63	// Использовать сложение регистров 128 и 129 для задания тока
 
 // Несохраняемые регистры чтения-записи
 #define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)
+#define REG_CURRENT_PULSE_VALUE_ADD		129	// Задание амплитуды импульса тока, чтобы добавить к значению регистра 128 (А * 10)
 #define REG_USE_LINEAR_DOWN				130	// Спад тока идёт по линейному закону
 
 #define REG_DBG							150	// Регистр режима Отладки
