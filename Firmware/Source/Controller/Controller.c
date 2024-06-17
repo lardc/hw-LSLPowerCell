@@ -297,7 +297,7 @@ void CONTROL_StartPrepare()
 	MEASURE_DMABufferClear();
 	CONTROL_CashVariables();
 
-	CU_LoadConvertParams(CONTROL_GetCurrentRange());
+	CU_LoadConvertParams(CONTROL_GetCurrentRange(), RegulatorParams.CurrentTarget);
 	CONTROL_SwitchCurrentRangeGain();
 
 	CONTROL_ConfigPulseShape();

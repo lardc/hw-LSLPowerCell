@@ -22,19 +22,25 @@ ConvertParams AdcToCurrentParams;
 ConvertParams CurrentToDacParams;
 
 // Functions prototypes
-float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients);
+float CU_ADCtoX(float Data, ConvertParams* Coefficients);
 
 // Functions
 //
 float CU_ItoDAC(float Current)
 {
-	// Пересчет амплитуды тока в расчете на одну CurrentBoard
-	Current = Current / DataTable[REG_CURBOARD_QUANTITY];
-	return (Current + CurrentToDacParams.B) * CurrentToDacParams.K;
+	if(DataTable[REG_I2DAC_CUST_RANGE0] || DataTable[REG_I2DAC_CUST_RANGE1])
+		return CU_ADCtoX(Current, &CurrentToDacParams);
+	else
+	{
+		// Менее удачный алгоритм пересчёта оставлен для обратной совместимости
+		// Пересчет амплитуды тока в расчете на одну CurrentBoard
+		Current = Current / DataTable[REG_CURBOARD_QUANTITY];
+		return (Current + CurrentToDacParams.B) * CurrentToDacParams.K;
+	}
 }
 //-----------------------------
 
-float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients)
+float CU_ADCtoX(float Data, ConvertParams* Coefficients)
 {
 	return (Data * Coefficients->K + Coefficients->B);
 }
@@ -57,7 +63,7 @@ float CU_ADCtoV(Int16U Data)
 }
 //-----------------------------
 
-void CU_LoadConvertParams(Int16U CurrentRange)
+void CU_LoadConvertParams(Int16U CurrentRange, float TargetCurrent)
 {
 	// Параметры преобразования значения АЦП в напряжение
 	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1e6;
@@ -71,6 +77,17 @@ void CU_LoadConvertParams(Int16U CurrentRange)
 	AdcToCurrentParams.B = (Int16S)DataTable[REG_ADC_I_RANGE0_B + CurrentRange * 6];
 	AdcToCurrentParams.Kamp = (float)DataTable[REG_K_AMP_RANGE0 + CurrentRange] / 100;
 
+	// Кастомные диапазоны пересчёта тока в ЦАП
+	if(DataTable[REG_I2DAC_CUST_RANGE0] || DataTable[REG_I2DAC_CUST_RANGE1])
+	{
+		TargetCurrent *= 10;
+		if(TargetCurrent < DataTable[REG_I2DAC_CUST_RANGE0])
+			CurrentRange = 0;
+		else if(TargetCurrent < DataTable[REG_I2DAC_CUST_RANGE1])
+			CurrentRange = 1;
+		else
+			CurrentRange = 2;
+	}
 	CurrentToDacParams.K = (float)DataTable[REG_I_TO_DAC_RANGE0_K + CurrentRange * 2] / 1000;
 	CurrentToDacParams.B = (Int16S)DataTable[REG_I_TO_DAC_RANGE0_B + CurrentRange * 2];
 }
