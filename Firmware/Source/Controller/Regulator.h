@@ -15,14 +15,13 @@
 //
 typedef struct __RegulatorParams
 {
-	Int16U CurrentRange;
 	float CurrentTarget;
 	float MeasuredCurrent;
 	float MeasuredBatteryVoltage;
 	float CurrentTable[PULSE_BUFFER_SIZE];
-	float Kp[CURRENT_RANGE_QUANTITY];
-	float Ki[CURRENT_RANGE_QUANTITY];
-	float KiTune[CURRENT_RANGE_QUANTITY];
+	float Kp;
+	float Ki;
+	float KiTune;
 	float RegulatorError;
 	bool DebugMode;
 	Int16U RegulatorPulseCounter;

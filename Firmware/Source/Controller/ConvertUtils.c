@@ -18,19 +18,19 @@ typedef struct __ConvertParams
 
 // Variables
 ConvertParams AdcToVoltageParams;
-ConvertParams AdcToCurrentParams[CURRENT_RANGE_QUANTITY];
-ConvertParams CurrentToDacParams[CURRENT_RANGE_QUANTITY];
+ConvertParams AdcToCurrentParams;
+ConvertParams CurrentToDacParams;
 
 // Functions prototypes
 float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients);
 
 // Functions
 //
-float CU_ItoDAC(float Current, Int16U CurrentRange)
+float CU_ItoDAC(float Current)
 {
 	// Пересчет амплитуды тока в расчете на одну CurrentBoard
 	Current = Current / DataTable[REG_CURBOARD_QUANTITY];
-	return (Current + CurrentToDacParams[CurrentRange].B) * CurrentToDacParams[CurrentRange].K;
+	return (Current + CurrentToDacParams.B) * CurrentToDacParams.K;
 }
 //-----------------------------
 
@@ -40,14 +40,14 @@ float CU_ADCtoX(Int16U Data, ConvertParams* Coefficients)
 }
 //-----------------------------
 
-float CU_ADCtoI(Int16U Data, Int16U CurrentRange)
+float CU_ADCtoI(Int16U Data)
 {
 	float Uadc, Current;
 
-	Uadc = CU_ADCtoX(Data, &AdcToCurrentParams[CurrentRange]);
-	Current = Uadc / AdcToCurrentParams[CurrentRange].Kamp / DataTable[REG_SHUNT_RESISTANCE] * 1000;
+	Uadc = CU_ADCtoX(Data, &AdcToCurrentParams);
+	Current = Uadc / AdcToCurrentParams.Kamp / DataTable[REG_SHUNT_RESISTANCE] * 1000;
 
-	return (Current * Current * AdcToCurrentParams[CurrentRange].P2 + Current * AdcToCurrentParams[CurrentRange].P1 + AdcToCurrentParams[CurrentRange].P0);
+	return (Current * Current * AdcToCurrentParams.P2 + Current * AdcToCurrentParams.P1 + AdcToCurrentParams.P0);
 }
 //-----------------------------
 
@@ -57,25 +57,21 @@ float CU_ADCtoV(Int16U Data)
 }
 //-----------------------------
 
-void CU_LoadConvertParams()
+void CU_LoadConvertParams(Int16U CurrentRange)
 {
 	// Параметры преобразования значения АЦП в напряжение
 	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1e6;
 	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_B];
 
 	// Параметры преобразования значения АЦП в ток и тока в ЦАП
-	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
-	{
-		AdcToCurrentParams[i].P2 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P2 + i * 6]) / 1e6;
-		AdcToCurrentParams[i].P1 = (float)DataTable[REG_ADC_I_RANGE0_P1 + i * 6] / 1000;
-		AdcToCurrentParams[i].P0 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P0 + i * 6]) / 10;
-		AdcToCurrentParams[i].K = (float)DataTable[REG_ADC_I_RANGE0_N + i * 6] / DataTable[REG_ADC_I_RANGE0_D + i * 6];
-		AdcToCurrentParams[i].B = (Int16S)DataTable[REG_ADC_I_RANGE0_B + i * 6];
-		AdcToCurrentParams[i].Kamp = (float)DataTable[REG_K_AMP_RANGE0 + i] / 100;
+	AdcToCurrentParams.P2 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P2 + CurrentRange * 6]) / 1e6;
+	AdcToCurrentParams.P1 = (float)DataTable[REG_ADC_I_RANGE0_P1 + CurrentRange * 6] / 1000;
+	AdcToCurrentParams.P0 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P0 + CurrentRange * 6]) / 10;
+	AdcToCurrentParams.K = (float)DataTable[REG_ADC_I_RANGE0_N + CurrentRange * 6] / DataTable[REG_ADC_I_RANGE0_D + CurrentRange * 6];
+	AdcToCurrentParams.B = (Int16S)DataTable[REG_ADC_I_RANGE0_B + CurrentRange * 6];
+	AdcToCurrentParams.Kamp = (float)DataTable[REG_K_AMP_RANGE0 + CurrentRange] / 100;
 
-		CurrentToDacParams[i].K = (float)DataTable[REG_I_TO_DAC_RANGE0_K + i * 2] / 1000;
-		CurrentToDacParams[i].B = (Int16S)DataTable[REG_I_TO_DAC_RANGE0_B + i * 2];
-	}
+	CurrentToDacParams.K = (float)DataTable[REG_I_TO_DAC_RANGE0_K + CurrentRange * 2] / 1000;
+	CurrentToDacParams.B = (Int16S)DataTable[REG_I_TO_DAC_RANGE0_B + CurrentRange * 2];
 }
 //-----------------------------
-

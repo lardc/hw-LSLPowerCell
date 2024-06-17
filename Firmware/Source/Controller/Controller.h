@@ -54,5 +54,6 @@ void CONTROL_CopyCurrentToEP();
 void CONTROL_StartProcess();
 void CONTROL_HandleFanLogic(bool IsImpulse);
 void CONTROL_PrepareForDebug(Int16U DACValue);
+Int16U CONTROL_GetCurrentRange();
 
 #endif // __CONTROLLER_H

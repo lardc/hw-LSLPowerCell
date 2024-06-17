@@ -55,6 +55,7 @@ void CONTROL_ResetOutputRegisters();
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 bool CONTROL_BatteryVoltageCheck();
+void CONTROL_SwitchCurrentRangeGain();
 
 // Functions
 //
@@ -91,8 +92,6 @@ void CONTROL_Init()
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
-
-	CU_LoadConvertParams();
 }
 //------------------------------------------
 
@@ -296,13 +295,43 @@ void CONTROL_HighPriorityProcess()
 void CONTROL_StartPrepare()
 {
 	MEASURE_DMABufferClear();
-	CU_LoadConvertParams();
-
 	CONTROL_CashVariables();
-	MEASURE_SetCurrentRange(&RegulatorParams);
+
+	CU_LoadConvertParams(CONTROL_GetCurrentRange());
+	CONTROL_SwitchCurrentRangeGain();
 
 	CONTROL_ConfigPulseShape();
 	CONTROL_CopyCurrentToEP();
+}
+//-----------------------------------------------
+
+Int16U CONTROL_GetCurrentRange()
+{
+	if((RegulatorParams.CurrentTarget * 10) <= DataTable[REG_CURRENT_THRESHOLD_RANGE0])
+		return CURRENT_RANGE_0;
+	else if((RegulatorParams.CurrentTarget * 10) <= DataTable[REG_CURRENT_THRESHOLD_RANGE1])
+		return CURRENT_RANGE_1;
+	else
+		return CURRENT_RANGE_2;
+}
+//-----------------------------------------------
+
+void CONTROL_SwitchCurrentRangeGain()
+{
+	switch(CONTROL_GetCurrentRange())
+	{
+		case CURRENT_RANGE_0:
+			LL_SetCurrentRange0();
+			break;
+
+		case CURRENT_RANGE_1:
+			LL_SetCurrentRange1();
+			break;
+
+		default:
+			LL_SetCurrentRange2();
+			break;
+	}
 }
 //-----------------------------------------------
 
@@ -316,14 +345,15 @@ void CONTROL_CashVariables()
 		RegulatorParams.CurrentTarget = CONTROL_CurrentMaxValue;
 
 	// Кеширование коэффициентов регулятора
-	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
-	{
-		RegulatorParams.Kp[i] = (float)DataTable[REG_REGULATOR_RANGE0_Kp + i * 2] / 1000;
-		RegulatorParams.Ki[i] = (float)DataTable[REG_REGULATOR_RANGE0_Ki + i * 2] / 1000;
-		RegulatorParams.KiTune[i] = (CONTROL_CurrentMaxValue - RegulatorParams.CurrentTarget)
-				* (float)DataTable[REG_REGULATOR_TF_Ki_RANG0 + i] / 1e6;
-	}
+	Int16U CurrentRange = CONTROL_GetCurrentRange();
 
+	RegulatorParams.Kp = (float)DataTable[REG_REGULATOR_RANGE0_Kp + CurrentRange * 2] / 1000;
+	RegulatorParams.Ki = (float)DataTable[REG_REGULATOR_RANGE0_Ki + CurrentRange * 2] / 1000;
+
+	RegulatorParams.KiTune = (CONTROL_CurrentMaxValue - RegulatorParams.CurrentTarget)
+			* (float)DataTable[REG_REGULATOR_TF_Ki_RANG0 + CurrentRange] / 1e6;
+
+	// Загрузка параметров ЦАП
 	RegulatorParams.DebugMode = false;
 	RegulatorParams.DACOffset = DataTable[REG_DAC_OFFSET];
 	RegulatorParams.DACLimitValue = (DAC_MAX_VAL > DataTable[REG_DAC_OUTPUT_LIMIT_VALUE]) ? \

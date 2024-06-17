@@ -5,9 +5,9 @@
 #include "ZwBase.h"
 
 // Functions
-float CU_ItoDAC(float Current, Int16U CurrentRange);
-float CU_ADCtoI(Int16U Data, Int16U CurrentRange);
+float CU_ItoDAC(float Current);
+float CU_ADCtoI(Int16U Data);
 float CU_ADCtoV(Int16U Data);
-void CU_LoadConvertParams();
+void CU_LoadConvertParams(Int16U CurrentRange);
 
-#endif /* CONVERTUTILS_H_ */
+#endif // CONVERTUTILS_H_

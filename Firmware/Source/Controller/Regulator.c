@@ -18,8 +18,8 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	Regulator->RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[Regulator->RegulatorPulseCounter] - Regulator->MeasuredCurrent);
 
-	Qp = Regulator->RegulatorError * Regulator->Kp[Regulator->CurrentRange];
-	Qi += Regulator->RegulatorError * (Regulator->Ki[Regulator->CurrentRange] + Regulator->KiTune[Regulator->CurrentRange]);
+	Qp = Regulator->RegulatorError * Regulator->Kp;
+	Qi += Regulator->RegulatorError * (Regulator->Ki + Regulator->KiTune);
 
 	float Qi_max = (float)DataTable[REG_REGULATOR_QI_MAX];
 	if(Qi > Qi_max)
@@ -34,7 +34,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	if(Regulator->DebugMode)
 		ValueToDAC = Regulator->CurrentTable[Regulator->RegulatorPulseCounter];
 	else
-		ValueToDAC = CU_ItoDAC(Regulator->RegulatorOutput, Regulator->CurrentRange);
+		ValueToDAC = CU_ItoDAC(Regulator->RegulatorOutput);
 
 	// Проверка границ диапазона ЦАП
 	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(ValueToDAC, Regulator->DACOffset, Regulator->DACLimitValue);

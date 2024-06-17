@@ -30,7 +30,7 @@ float MEASURE_SingleSampleBatteryVoltage()
 
 void MEASURE_SampleParams(volatile RegulatorParamsStruct* Regulator)
 {
-	Regulator->MeasuredCurrent = CU_ADCtoI(MEASURE_DMAExtractCurrent(), Regulator->CurrentRange);
+	Regulator->MeasuredCurrent = CU_ADCtoI(MEASURE_DMAExtractCurrent());
 	Regulator->MeasuredBatteryVoltage = CU_ADCtoV(MEASURE_DMAExtractVolatge());
 	MEASURE_StartNewSampling();
 }
@@ -74,26 +74,3 @@ void MEASURE_StartNewSampling()
 	ADC_SamplingStart(ADC3);
 }
 //-----------------------------------------------
-
-void MEASURE_SetCurrentRange(volatile RegulatorParamsStruct* Regulator)
-{
-	if((Regulator->CurrentTarget * 10) <= DataTable[REG_CURRENT_THRESHOLD_RANGE0])
-	{
-		Regulator->CurrentRange = CURRENT_RANGE_0;
-		LL_SetCurrentRange0();
-	}
-	else if((Regulator->CurrentTarget * 10) <= DataTable[REG_CURRENT_THRESHOLD_RANGE1])
-	{
-		Regulator->CurrentRange = CURRENT_RANGE_1;
-		LL_SetCurrentRange1();
-	}
-	else
-	{
-		Regulator->CurrentRange = CURRENT_RANGE_2;
-		LL_SetCurrentRange2();
-	}
-
-}
-//-----------------------------------------------
-
-
