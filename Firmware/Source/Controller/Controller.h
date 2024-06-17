@@ -40,9 +40,6 @@ extern volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_DACRawData[VALUES_x_SIZE];
-//
-extern volatile RegulatorParamsStruct RegulatorParams;
-
 
 // Functions
 //
@@ -52,10 +49,10 @@ void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_HighPriorityProcess();
 void CONTROL_ExternalInterruptProcess();
-void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator);
-void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator);
-void CONTROL_CopyCurrentToEP(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_ConfigPulseShape();
+void CONTROL_CopyCurrentToEP();
 void CONTROL_StartProcess();
 void CONTROL_HandleFanLogic(bool IsImpulse);
+void CONTROL_PrepareForDebug(Int16U DACValue);
 
 #endif // __CONTROLLER_H

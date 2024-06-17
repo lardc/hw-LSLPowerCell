@@ -52,7 +52,6 @@ void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
 void CONTROL_PostPulseSlowSequence();
 void CONTROL_ResetOutputRegisters();
-bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 bool CONTROL_BatteryVoltageCheck();
@@ -284,7 +283,7 @@ void CONTROL_HighPriorityProcess()
 	{
 		MEASURE_SampleParams(&RegulatorParams);
 
-		if(CONTROL_RegulatorCycle(&RegulatorParams))
+		if(REGULATOR_Process(&RegulatorParams))
 		{
 			CONTROL_StopProcess();
 			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
@@ -294,48 +293,64 @@ void CONTROL_HighPriorityProcess()
 }
 //-----------------------------------------------
 
-bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
-{
-	return REGULATOR_Process(Regulator);
-}
-//-----------------------------------------------
-
 void CONTROL_StartPrepare()
 {
 	MEASURE_DMABufferClear();
 	CU_LoadConvertParams();
-	REGULATOR_CashVariables(&RegulatorParams);
-	CONTROL_CashVariables();
-	CONTROL_SineConfig(&RegulatorParams);
-	CONTROL_LinearConfig(&RegulatorParams);
-	CONTROL_CopyCurrentToEP(&RegulatorParams);
 
+	CONTROL_CashVariables();
 	MEASURE_SetCurrentRange(&RegulatorParams);
+
+	CONTROL_ConfigPulseShape();
+	CONTROL_CopyCurrentToEP();
 }
 //-----------------------------------------------
 
 void CONTROL_CashVariables()
 {
+	// Определение целевых значений уставки
+	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
 	RegulatorParams.CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
 
-	CONTROL_CurrentMaxValue = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
 	if(RegulatorParams.CurrentTarget > CONTROL_CurrentMaxValue)
 		RegulatorParams.CurrentTarget = CONTROL_CurrentMaxValue;
-}
-//-----------------------------------------------
 
-void CONTROL_SineConfig(volatile RegulatorParamsStruct* Regulator)
-{
-	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
+	// Кеширование коэффициентов регулятора
+	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
 	{
-		float Setpoint = Regulator->CurrentTarget * sin(PI * i / ((CURRENT_PULSE_WIDTH / TIMER15_uS) - 1));
-		Regulator->CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
+		RegulatorParams.Kp[i] = (float)DataTable[REG_REGULATOR_RANGE0_Kp + i * 2] / 1000;
+		RegulatorParams.Ki[i] = (float)DataTable[REG_REGULATOR_RANGE0_Ki + i * 2] / 1000;
+		RegulatorParams.KiTune[i] = (CONTROL_CurrentMaxValue - RegulatorParams.CurrentTarget)
+				* (float)DataTable[REG_REGULATOR_TF_Ki_RANG0 + i] / 1e6;
 	}
+
+	RegulatorParams.DebugMode = false;
+	RegulatorParams.DACOffset = DataTable[REG_DAC_OFFSET];
+	RegulatorParams.DACLimitValue = (DAC_MAX_VAL > DataTable[REG_DAC_OUTPUT_LIMIT_VALUE]) ? \
+			DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] : DAC_MAX_VAL;
 }
 //-----------------------------------------------
 
-void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
+void CONTROL_PrepareForDebug(Int16U DACValue)
 {
+	if(DACValue > DAC_MAX_VAL)
+		DACValue = DAC_MAX_VAL;
+
+	RegulatorParams.DebugMode = true;
+	RegulatorParams.CurrentTarget = DACValue;
+	RegulatorParams.DACOffset = DataTable[REG_DAC_OFFSET];
+}
+//-----------------------------------------------
+
+void CONTROL_ConfigPulseShape()
+{
+	int i;
+	for(i = 0; i < PULSE_BUFFER_SIZE; ++i)
+	{
+		float Setpoint = RegulatorParams.CurrentTarget * sinf(PI * i / ((CURRENT_PULSE_WIDTH / TIMER15_uS) - 1));
+		RegulatorParams.CurrentTable[i] = (Setpoint > 0) ? Setpoint : 0;
+	}
+
 	if(DataTable[REG_USE_LINEAR_DOWN])
 	{
 		float StartCurrent = CURRENT_TAIL_START_CURR;
@@ -345,9 +360,9 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 
 		// Поиск стартового индекса
 		Int16U StartIndex = TopIndex;
-		for (int i = TopIndex; i < PULSE_BUFFER_SIZE; ++i)
+		for (i = TopIndex; i < PULSE_BUFFER_SIZE; ++i)
 		{
-			if (Regulator->CurrentTable[i] < StartCurrent)
+			if (RegulatorParams.CurrentTable[i] < StartCurrent)
 			{
 				StartIndex = i;
 				break;
@@ -356,19 +371,19 @@ void CONTROL_LinearConfig(volatile RegulatorParamsStruct* Regulator)
 
 		// Дописываем плавно спадающий хвост
 		float DecreaseStep = (StartCurrent - StopCurrent) / (PULSE_BUFFER_SIZE - StartIndex);
-		for (int i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
+		for (i = StartIndex; i < PULSE_BUFFER_SIZE; ++i)
 		{
 			StartCurrent -= DecreaseStep;
-			Regulator->CurrentTable[i] = StartCurrent;
+			RegulatorParams.CurrentTable[i] = StartCurrent;
 		}
 	}
 }
 //-----------------------------------------------
 
-void CONTROL_CopyCurrentToEP(volatile RegulatorParamsStruct* Regulator)
+void CONTROL_CopyCurrentToEP()
 {
 	for(int i = 0; i < PULSE_BUFFER_SIZE; ++i)
-		CONTROL_CurentTable[i] = (Int16S)Regulator->CurrentTable[i];
+		CONTROL_CurentTable[i] = (Int16S)RegulatorParams.CurrentTable[i];
 }
 //-----------------------------------------------
 

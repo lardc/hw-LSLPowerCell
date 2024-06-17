@@ -46,15 +46,9 @@ void DBGACT_FanControl(bool State)
 
 void DBGACT_PulseProcess(Int16U DACValue)
 {
-	if(DACValue > DAC_MAX_VAL)
-		DACValue = DAC_MAX_VAL;
-
-	RegulatorParams.DebugMode = true;
-	RegulatorParams.CurrentTarget = DACValue;
-	RegulatorParams.DACOffset = DataTable[REG_DAC_OFFSET];
-	CONTROL_SineConfig(&RegulatorParams);
-	CONTROL_LinearConfig(&RegulatorParams);
-	CONTROL_CopyCurrentToEP(&RegulatorParams);
+	CONTROL_PrepareForDebug(DACValue);
+	CONTROL_ConfigPulseShape();
+	CONTROL_CopyCurrentToEP();
 
 	CONTROL_SetDeviceState(DS_None, SS_Pulse);
 	CONTROL_StartProcess();

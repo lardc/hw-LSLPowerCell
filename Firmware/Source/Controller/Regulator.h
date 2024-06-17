@@ -30,12 +30,9 @@ typedef struct __RegulatorParams
 	Int16U DACOffset;
 	Int16U DACLimitValue;
 	Int16U DACSetpoint;
-}RegulatorParamsStruct;
+} RegulatorParamsStruct;
 
 // Functions
-//
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator);
-//
 
-#endif /* REGULATOR_H_ */
+#endif // REGULATOR_H_

@@ -98,23 +98,3 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 		LocalCounter = 0;
 }
 //-----------------------------------------------
-
-void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
-{
-	float CurrentMax = (float)DataTable[REG_CURRENT_PER_CURBOARD] / 10 * DataTable[REG_CURBOARD_QUANTITY];
-	float CurrentTarget = (float)DataTable[REG_CURRENT_PULSE_VALUE] / 10;
-
-	// Кеширование коэффициентов регулятора
-	for(int i = 0; i < CURRENT_RANGE_QUANTITY; i++)
-	{
-		Regulator->Kp[i] = (float)DataTable[REG_REGULATOR_RANGE0_Kp + i * 2] / 1000;
-		Regulator->Ki[i] = (float)DataTable[REG_REGULATOR_RANGE0_Ki + i * 2] / 1000;
-		Regulator->KiTune[i] = (CurrentMax - CurrentTarget) * (float)DataTable[REG_REGULATOR_TF_Ki_RANG0 + i] / 1e6;
-	}
-
-	Regulator->DebugMode = false;
-	Regulator->DACOffset = DataTable[REG_DAC_OFFSET];
-	Regulator->DACLimitValue = (DAC_MAX_VAL > DataTable[REG_DAC_OUTPUT_LIMIT_VALUE]) ? \
-			DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] : DAC_MAX_VAL;
-}
-//-----------------------------------------------
