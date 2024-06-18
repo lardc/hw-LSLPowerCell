@@ -96,6 +96,7 @@
 #define REG_CFG_CURRENT_LIMIT_MIN		61	// Минимальное задание по току (А х10)
 #define REG_CFG_CURRENT_LIMIT_MAX		62	// Максимальное задание по току (А х10)
 #define REG_CFG_HIGH_CURRENT_SET		63	// Использовать сложение регистров 128 и 129 для задания тока
+#define REG_CFG_OLD_I_RANGE_SWITCH		64	// Использовать переключение диапазонов тока LSLPC v.1.0
 
 // Несохраняемые регистры чтения-записи
 #define REG_CURRENT_PULSE_VALUE			128	// Задание амплитуды импульса тока (А * 10)

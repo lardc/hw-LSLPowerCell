@@ -4,6 +4,8 @@
 #include "Board.h"
 #include "Delay.h"
 #include "Global.h"
+#include "DataTable.h"
+#include "DeviceObjectDictionary.h"
 
 // Functions
 //
@@ -33,15 +35,25 @@ void LL_PowerSupplyEnable(bool State)
 
 void LL_SetCurrentRange0()
 {
-	GPIO_SetState(GPIO_IFB_R0, false);
-	GPIO_SetState(GPIO_IFB_R1, false);
+	if(DataTable[REG_CFG_OLD_I_RANGE_SWITCH])
+		GPIO_SetState(GPIO_OLD_RANGE_SWITCH, true);
+	else
+	{
+		GPIO_SetState(GPIO_IFB_R0, false);
+		GPIO_SetState(GPIO_IFB_R1, false);
+	}
 }
 //-----------------------------
 
 void LL_SetCurrentRange1()
 {
-	GPIO_SetState(GPIO_IFB_R0, true);
-	GPIO_SetState(GPIO_IFB_R1, false);
+	if(DataTable[REG_CFG_OLD_I_RANGE_SWITCH])
+		GPIO_SetState(GPIO_OLD_RANGE_SWITCH, false);
+	else
+	{
+		GPIO_SetState(GPIO_IFB_R0, true);
+		GPIO_SetState(GPIO_IFB_R1, false);
+	}
 }
 //-----------------------------
 

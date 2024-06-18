@@ -34,6 +34,7 @@ void INITCFG_ConfigIO()
 	GPIO_InitPushPullOutput(GPIO_IFB_R0);
 	GPIO_InitPushPullOutput(GPIO_IFB_R1);
 	GPIO_InitPushPullOutput(GPIO_LED);
+	GPIO_InitPushPullOutput(GPIO_OLD_RANGE_SWITCH);
 
 	// Выходы OpenDrain
 	GPIO_InitOpenDrainOutput(GPIO_SYNC_CTRL, NoPull);

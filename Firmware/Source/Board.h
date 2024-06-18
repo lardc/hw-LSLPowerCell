@@ -22,6 +22,7 @@ GPIO_PortPinSettingMacro GPIO_SYNC_CTRL			= {GPIOB, Pin_3};
 GPIO_PortPinSettingMacro GPIO_IFB_R0			= {GPIOB, Pin_6};
 GPIO_PortPinSettingMacro GPIO_IFB_R1			= {GPIOB, Pin_5};
 GPIO_PortPinSettingMacro GPIO_LED				= {GPIOB, Pin_15};
+GPIO_PortPinSettingMacro GPIO_OLD_RANGE_SWITCH	= {GPIOA, Pin_15};
 
 // Определения для входных портов
 GPIO_PortPinSettingMacro GPIO_SYNC				= {GPIOB, Pin_4};
