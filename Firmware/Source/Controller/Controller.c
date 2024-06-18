@@ -56,6 +56,7 @@ void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 bool CONTROL_BatteryVoltageCheck();
 void CONTROL_SwitchCurrentRangeGain();
+void CONTROL_GetMaxCurrentAndDAC();
 
 // Functions
 //
@@ -104,6 +105,7 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
 	
 	DataTable[REG_RESULT_CURRENT] = 0;
+	DataTable[REG_RESULT_MAX_DAC] = 0;
 
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
@@ -286,6 +288,7 @@ void CONTROL_HighPriorityProcess()
 		{
 			CONTROL_StopProcess();
 			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
+			CONTROL_GetMaxCurrentAndDAC();
 			DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		}
 	}
@@ -332,6 +335,30 @@ void CONTROL_SwitchCurrentRangeGain()
 			LL_SetCurrentRange2();
 			break;
 	}
+}
+//-----------------------------------------------
+
+void CONTROL_GetMaxCurrentAndDAC()
+{
+	// Поиск максимального значения ЦАП
+	int i, MaxDACIndex = 0;
+	for(i = 1; i < VALUES_x_SIZE; i++)
+	{
+		if(CONTROL_RegulatorOutput[i] > CONTROL_RegulatorOutput[MaxDACIndex])
+			MaxDACIndex = i;
+	}
+	DataTable[REG_RESULT_MAX_DAC] = CONTROL_RegulatorOutput[MaxDACIndex];
+
+	// Поиск максимального тока
+	float MaxCurrent = 0;
+	Int16U CurrentCounter = 0, SearchZone = 1;
+	for(i = (MaxDACIndex > SearchZone) ? (MaxDACIndex - SearchZone) : 0;
+			i < (MaxDACIndex + SearchZone) && i < VALUES_x_SIZE; i++)
+	{
+		MaxCurrent += CONTROL_ValuesCurrent[i];
+		CurrentCounter++;
+	}
+	DataTable[REG_RESULT_CURRENT] = MaxCurrent * 10 / CurrentCounter;
 }
 //-----------------------------------------------
 
