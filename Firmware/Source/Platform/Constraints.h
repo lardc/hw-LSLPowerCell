@@ -48,7 +48,7 @@
 //
 #define I_PER_CURBOARD_MIN			500			// A * 10
 #define I_PER_CURBOARD_MAX			15000		// A * 10
-#define I_PER_CURBOARD_DEF			10833		// A * 10
+#define I_PER_CURBOARD_DEF			21000		// A * 10
 //
 #define CURBOARD_QUANTITY_MIN		1
 #define CURBOARD_QUANTITY_MAX		6
