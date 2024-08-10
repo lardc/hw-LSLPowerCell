@@ -65,10 +65,6 @@ float CU_ADCtoV(Int16U Data)
 
 void CU_LoadConvertParams(Int16U CurrentRange, float TargetCurrent)
 {
-	// Параметры преобразования значения АЦП в напряжение
-	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1e6;
-	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_B];
-
 	// Параметры преобразования значения АЦП в ток и тока в ЦАП
 	AdcToCurrentParams.P2 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P2 + CurrentRange * 6]) / 1e6;
 	AdcToCurrentParams.P1 = (float)DataTable[REG_ADC_I_RANGE0_P1 + CurrentRange * 6] / 1000;
@@ -90,5 +86,12 @@ void CU_LoadConvertParams(Int16U CurrentRange, float TargetCurrent)
 	}
 	CurrentToDacParams.K = (float)DataTable[REG_I_TO_DAC_RANGE0_K + CurrentRange * 2] / 1000;
 	CurrentToDacParams.B = (Int16S)DataTable[REG_I_TO_DAC_RANGE0_B + CurrentRange * 2];
+}
+
+void CU_LoadConvertVoltageParams()
+{
+	// Параметры преобразования значения АЦП в напряжение
+	AdcToVoltageParams.K = (float)DataTable[REG_ADC_VOLTAGE_K] / 1e6;
+	AdcToVoltageParams.B = (Int16S)DataTable[REG_ADC_VOLTAGE_B];
 }
 //-----------------------------

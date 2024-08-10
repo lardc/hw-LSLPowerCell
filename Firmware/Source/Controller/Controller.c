@@ -93,6 +93,8 @@ void CONTROL_Init()
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
+
+	CU_LoadConvertVoltageParams();
 }
 //------------------------------------------
 
