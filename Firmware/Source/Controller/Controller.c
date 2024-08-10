@@ -346,10 +346,10 @@ void CONTROL_GetMaxCurrentAndDAC()
 	int i, MaxDACIndex = 0;
 	for(i = 1; i < VALUES_x_SIZE; i++)
 	{
-		if(CONTROL_RegulatorOutput[i] > CONTROL_RegulatorOutput[MaxDACIndex])
+		if(CONTROL_DACRawData[i] > CONTROL_DACRawData[MaxDACIndex])
 			MaxDACIndex = i;
 	}
-	DataTable[REG_RESULT_MAX_DAC] = CONTROL_RegulatorOutput[MaxDACIndex];
+	DataTable[REG_RESULT_MAX_DAC] = CONTROL_DACRawData[MaxDACIndex];
 
 	// Поиск максимального тока
 	float MaxCurrent = 0;
