@@ -13,6 +13,8 @@
 #include "Constraints.h"
 #include "ZwNCAN.h"
 #include "ZwSCI.h"
+#include "SaveToFlash.h"
+#include "FormatOutputJSON.h"
 
 // Types
 //
@@ -154,6 +156,7 @@ static Boolean DEVPROFILE_Validate16(Int16U Address, Int16U Data)
 
 static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 {
+	static Int32U MemoryPointer = 0;
 	switch (ActionID)
 	{
 		case ACT_SAVE_TO_ROM:
@@ -164,6 +167,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 					DT_SaveNVPartToEPROM();
 			}
 			break;
+
 		case ACT_RESTORE_FROM_ROM:
 			{
 				if(ENABLE_LOCKING && !UnlockedForNVWrite)
@@ -172,6 +176,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 					DT_RestoreNVPartFromEPROM();
 			}
 			break;
+
 		case ACT_RESET_TO_DEFAULT:
 			{
 				if(ENABLE_LOCKING && !UnlockedForNVWrite)
@@ -180,9 +185,52 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 					DT_ResetNVPart(&DEVPROFILE_FillNVPartDefault);
 			}
 			break;
+
 		case ACT_BOOT_LOADER_REQUEST:
 			BOOT_LOADER_VARIABLE = BOOT_LOADER_REQUEST;
 			break;
+
+		case ACT_FLASH_DIAG_INIT_READ:
+			MemoryPointer = FLASH_DIAG_START_ADDR;
+			break;
+
+		case ACT_FLASH_DIAG_SAVE:
+			STF_SaveDiagData();
+			break;
+
+		case ACT_FLASH_DIAG_ERASE:
+			STF_EraseDataSector();
+			break;
+
+		case ACT_FLASH_DIAG_TO_EP:
+			{
+				DEVPROFILE_ResetEPReadState();
+				DEVPROFILE_ResetScopes(0);
+
+				for(CONTROL_ExtInfoCounter = 0;
+						CONTROL_ExtInfoCounter < VALUES_EXT_INFO_SIZE && MemoryPointer <= FLASH_DIAG_END_ADDR;)
+				{
+					CONTROL_ExtInfoData[CONTROL_ExtInfoCounter++] = NFLASH_ReadWord16(MemoryPointer);
+					MemoryPointer += 2;
+				}
+			}
+			break;
+
+		case ACT_JSON_INIT_READ:
+			CONTROL_InitJSONPointers();
+			JSON_ResetStateMachine();
+			break;
+
+		case ACT_JSON_TO_EP:
+			{
+				DEVPROFILE_ResetEPReadState();
+				DEVPROFILE_ResetScopes(0);
+
+				for(CONTROL_ExtInfoCounter = 0; CONTROL_ExtInfoCounter < VALUES_EXT_INFO_SIZE;)
+					CONTROL_ExtInfoData[CONTROL_ExtInfoCounter++] = JSON_ReadSymbol();
+			}
+			break;
+
 		default:
 			return (ControllerDispatchFunction) ? ControllerDispatchFunction(ActionID, UserError) : FALSE;
 	}
@@ -246,7 +294,13 @@ Int16U DEVPROFILE_CallbackReadX(Int16U Endpoint, pInt16U* Buffer, Boolean Stream
 	
 	// Update content state
 	epState->LastReadCounter = epState->ReadCounter;
-	epState->ReadCounter += pLen;
+	if(!Streamed)
+	{
+		if(pLen == 0)
+			epState->ReadCounter = 0;
+		else
+			epState->ReadCounter += pLen;
+	}
 	
 	return pLen;
 }

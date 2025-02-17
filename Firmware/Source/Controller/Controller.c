@@ -14,6 +14,9 @@
 #include "Measurement.h"
 #include "InitConfig.h"
 #include "math.h"
+#include "SaveToFlash.h"
+#include "Constraints.h"
+#include "JSONDescription.h"
 
 // Types
 //
@@ -24,18 +27,21 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
+static Boolean RequestSaveToFlash = false;
 //
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_AfterPulsePause = 0;
 volatile Int64U	CONTROL_BatteryChargeTimeCounter = 0;
 volatile Int64U CONTROL_ConfigStateCounter = 0;
 volatile Int16U CONTROL_Values_Counter = 0;
+volatile Int16U CONTROL_ExtInfoCounter = 0;
 volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
 volatile Int16U CONTROL_CurentTable[VALUES_x_SIZE];
 volatile Int16U CONTROL_DACRawData[VALUES_x_SIZE];
+volatile Int16U CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE];
 //
 float CONTROL_CurrentMaxValue = 0;
 //
@@ -57,6 +63,7 @@ void CONTROL_CashVariables();
 bool CONTROL_BatteryVoltageCheck();
 void CONTROL_SwitchCurrentRangeGain();
 void CONTROL_GetMaxCurrentAndDAC();
+void CONTROL_InitJSONPointers();
 
 // Functions
 //
@@ -64,21 +71,22 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[EP_COUNT] = {EP_CURRENT, EP_BATTERY_VOLTAGE, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR, EP_CUR_TABLE,
-			EP_DAC_RAW_DATA};
+			EP_DAC_RAW_DATA, EP_ExtInfoData};
 
 	Int16U EPSized[EP_COUNT] =
-			{VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+			{VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_EXT_INFO_SIZE};
 
 	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
 			(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
-			(pInt16U)&CONTROL_Values_Counter};
+			(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_ExtInfoCounter};
 
 	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_ValuesBatteryVoltage,
 			(pInt16U)CONTROL_RegulatorOutput, (pInt16U)CONTROL_RegulatorErr, (pInt16U)CONTROL_CurentTable,
-			(pInt16U)CONTROL_DACRawData};
+			(pInt16U)CONTROL_DACRawData, (pInt16U)CONTROL_ExtInfoData};
 
 	// Конфигурация сервиса работы DataTable и EEPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
+
 	// Инициализация DataTable
 	DT_Init(EPROMService, false);
 
@@ -90,9 +98,12 @@ void CONTROL_Init()
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive, NodeID);
 	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
+
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
+
+	// Инициализация указателей на сохраняемые данные
 }
 //------------------------------------------
 
@@ -126,6 +137,12 @@ void CONTROL_ResetToDefaultState()
 void CONTROL_Idle()
 {
 	CONTROL_LogicProcess();
+
+	if (RequestSaveToFlash)
+	{
+		RequestSaveToFlash = false;
+		STF_SaveDiagData();
+	}
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
@@ -537,3 +554,24 @@ void CONTROL_UpdateWatchDog()
 }
 //------------------------------------------
 
+void CONTROL_InitJSONPointers()
+{
+	Itm1Min = DataTable[REG_CFG_CURRENT_LIMIT_MIN] == 0 ? CURRENT_SETPOINT_MIN : DataTable[REG_CFG_CURRENT_LIMIT_MIN];
+	Itm1Max = DataTable[REG_I2DAC_CUST_RANGE0];
+
+	Itm2Min = DataTable[REG_I2DAC_CUST_RANGE0];
+	Itm2Max = DataTable[REG_I2DAC_CUST_RANGE1];
+
+	Itm3Min = DataTable[REG_I2DAC_CUST_RANGE1];
+	Itm3Max = DataTable[REG_CFG_CURRENT_LIMIT_MAX] == 0 ? CURRENT_SETPOINT_MAX : DataTable[REG_CFG_CURRENT_LIMIT_MAX];
+
+	JSON_AssignPointer(0, &Itm1Min);
+	JSON_AssignPointer(1, &Itm1Max);
+
+	JSON_AssignPointer(2, &Itm2Min);
+	JSON_AssignPointer(3, &Itm2Max);
+
+	JSON_AssignPointer(4, &Itm3Min);
+	JSON_AssignPointer(5, &Itm3Max);
+}
+//------------------------------------------

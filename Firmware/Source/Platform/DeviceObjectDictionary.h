@@ -21,6 +21,15 @@
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
 
 #define ACT_BOOT_LOADER_REQUEST			320	// Перезапуск процессора с целью перепрограммирования
+
+#define ACT_FLASH_DIAG_INIT_READ		331	// Инициализировать начало считывания отладочной информации
+
+#define ACT_FLASH_DIAG_SAVE				332	// Сохранение блока отладочной информации во флэш
+#define ACT_FLASH_DIAG_ERASE			333	// Стирание области отладочной информации
+
+#define ACT_FLASH_DIAG_TO_EP			340	// Выполнить чтение массива из памяти отладочной информации в EP
+#define ACT_JSON_INIT_READ				341	// Инициализация начала считывания JSON
+#define ACT_JSON_TO_EP					342	// Выполнить чтение шаблона JSON в EP
 // -----------------------------
 
 // Регистры
@@ -123,7 +132,8 @@
 // 258 - 259
 #define REG_FWINFO_STR_LEN				260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN			261	// Begining of the information string record
-
+//
+#define REG_MEM_SYMBOL					299	// Считанный по адресу памяти символ
 
 // Operation results
 #define OPRESULT_NONE					0	// No information or not finished
@@ -154,5 +164,7 @@
 #define EP_REGULATOR_ERR				4
 #define EP_CUR_TABLE					5
 #define EP_DAC_RAW_DATA					6
+
+#define EP_ExtInfoData					20	// External information from flash
 
 #endif //  __DEV_OBJ_DIC_H
