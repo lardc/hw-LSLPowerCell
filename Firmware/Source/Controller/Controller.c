@@ -105,7 +105,7 @@ void CONTROL_Init()
 	CONTROL_ResetToDefaultState();
 
 	// Инициализация указателей на сохраняемые данные
-	void CONTROL_InitStoragePointers();
+	CONTROL_InitStoragePointers();
 }
 //------------------------------------------
 
