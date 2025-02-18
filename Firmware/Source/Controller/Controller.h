@@ -57,5 +57,6 @@ void CONTROL_HandleFanLogic(bool IsImpulse);
 void CONTROL_PrepareForDebug(Int16U DACValue);
 Int16U CONTROL_GetCurrentRange();
 void CONTROL_InitJSONPointers();
+void CONTROL_InitStoragePointers();
 
 #endif // __CONTROLLER_H

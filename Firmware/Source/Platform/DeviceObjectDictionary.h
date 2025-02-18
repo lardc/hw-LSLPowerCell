@@ -132,8 +132,6 @@
 // 258 - 259
 #define REG_FWINFO_STR_LEN				260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN			261	// Begining of the information string record
-//
-#define REG_MEM_SYMBOL					299	// Считанный по адресу памяти символ
 
 // Operation results
 #define OPRESULT_NONE					0	// No information or not finished
