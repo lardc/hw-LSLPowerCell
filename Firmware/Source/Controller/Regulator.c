@@ -4,6 +4,8 @@
 #include "DataTable.h"
 #include "LowLevel.h"
 #include "ConvertUtils.h"
+#include "Math.h"
+#include "Controller.h"
 
 // Functions prototypes
 //
@@ -15,8 +17,21 @@ Int16U REGULATOR_DACApplyLimits(float Value, Int16U Offset, Int16U LimitValue);
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 {
 	static float Qi = 0, Qp;
-
+	static Int16U  FollowingErrorCounter = 0;
 	Regulator->RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->CurrentTable[Regulator->RegulatorPulseCounter] - Regulator->MeasuredCurrent);
+
+	if(fabsf(Regulator->RegulatorError / Regulator->CurrentTarget * 100) < Regulator->RegulatorAlowedError)
+		FollowingErrorCounter = 0;
+	else
+		FollowingErrorCounter++;
+
+	if(FollowingErrorCounter >= Regulator->FollowingErrorCounterMax)
+		{
+			FollowingErrorCounter = 0;
+			CONTROL_StopProcess();
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			DataTable[REG_PROBLEM] = PROBLEM_FOLLOWING_ERROR;
+		}
 
 	Qp = Regulator->RegulatorError * Regulator->Kp;
 	Qi += Regulator->RegulatorError * (Regulator->Ki + Regulator->KiTune);
@@ -42,11 +57,12 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	REGULATOR_LoggingData(Regulator);
 	Regulator->RegulatorPulseCounter++;
-	if(Regulator->RegulatorPulseCounter >= PULSE_BUFFER_SIZE)
+	if(Regulator->RegulatorPulseCounter >= PULSE_BUFFER_SIZE || DataTable[REG_PROBLEM] == PROBLEM_FOLLOWING_ERROR)
 	{
 		Regulator->DebugMode = false;
 		Regulator->RegulatorPulseCounter = 0;
 		Qi = 0;
+		FollowingErrorCounter = 0;
 		return true;
 	}
 	else

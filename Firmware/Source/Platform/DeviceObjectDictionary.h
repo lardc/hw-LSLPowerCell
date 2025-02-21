@@ -144,6 +144,7 @@
 // Problem
 #define PROBLEM_NONE					0
 #define PROBLEM_BATTERY					1
+#define PROBLEM_FOLLOWING_ERROR			2
 
 //  Warning
 #define WARNING_NONE					0
