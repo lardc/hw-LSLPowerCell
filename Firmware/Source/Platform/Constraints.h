@@ -48,7 +48,7 @@
 //
 #define I_PER_CURBOARD_MIN			500			// A * 10
 #define I_PER_CURBOARD_MAX			15000		// A * 10
-#define I_PER_CURBOARD_DEF			21000		// A * 10
+#define I_PER_CURBOARD_DEF			10834		// A * 10
 //
 #define CURBOARD_QUANTITY_MIN		1
 #define CURBOARD_QUANTITY_MAX		6
@@ -92,6 +92,23 @@
 #define CONF_STATE_TIMEOUT_MIN		1000		// мс
 #define CONF_STATE_TIMEOUT_MAX		10000		// мс
 #define CONF_STATE_TIMEOUT_DEF		5000		// мс
+//
+#define REG_REGULATOR_QI_DEF		30000
+//
+#define I2DAC_CUST_RANGE0_DEF		3500
+#define I2DAC_CUST_RANGE1_DEF		11000
+//
+#define I_TO_DAC_RANGE0_K_DEF		451			//  x1000
+#define I_TO_DAC_RANGE0_B_DEF		69
+#define I_TO_DAC_RANGE1_K_DEF		328			//  x1000
+#define I_TO_DAC_RANGE1_B_DEF		112
+#define I_TO_DAC_RANGE2_K_DEF		255			//  x1000
+#define I_TO_DAC_RANGE2_B_DEF		209
+//
+#define K_AMP_RANGE0_DEF			1460		// x100
+#define K_AMP_RANGE1_DEF			243			// x100
+//
+#define CAN_SLAVE_NID_DEF			150
 
 // Types
 typedef struct __TableItemConstraint
