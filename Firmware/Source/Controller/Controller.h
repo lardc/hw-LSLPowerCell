@@ -35,12 +35,13 @@ extern volatile Int64U CONTROL_TimeCounter;
 extern Int64U CONTROL_LEDTimeout;
 extern volatile Int16U CONTROL_Values_Counter;
 extern volatile Int16U CONTROL_RegulatorErr_Counter;
+extern volatile Int16U CONTROL_ExtInfoCounter;
 extern volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_ValuesBatteryVoltage[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_RegulatorOutput[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_DACRawData[VALUES_x_SIZE];
-
+extern volatile Int16U CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE];
 // Functions
 //
 void CONTROL_Init();
@@ -52,8 +53,11 @@ void CONTROL_ExternalInterruptProcess();
 void CONTROL_ConfigPulseShape();
 void CONTROL_CopyCurrentToEP();
 void CONTROL_StartProcess();
+void CONTROL_StopProcess();
 void CONTROL_HandleFanLogic(bool IsImpulse);
 void CONTROL_PrepareForDebug(Int16U DACValue);
 Int16U CONTROL_GetCurrentRange();
+void CONTROL_InitJSONPointers();
+void CONTROL_InitStoragePointers();
 
 #endif // __CONTROLLER_H
