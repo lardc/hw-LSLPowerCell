@@ -65,6 +65,8 @@ float CU_ADCtoV(Int16U Data)
 
 void CU_LoadConvertParams(Int16U CurrentRange, float TargetCurrent)
 {
+	CU_LoadConvertVoltageParams();
+
 	// Параметры преобразования значения АЦП в ток и тока в ЦАП
 	AdcToCurrentParams.P2 = (float)((Int16S)DataTable[REG_ADC_I_RANGE0_P2 + CurrentRange * 6]) / 1e6;
 	AdcToCurrentParams.P1 = (float)DataTable[REG_ADC_I_RANGE0_P1 + CurrentRange * 6] / 1000;

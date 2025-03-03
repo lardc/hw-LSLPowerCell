@@ -24,6 +24,7 @@ float MEASURE_SingleSampleBatteryVoltage()
 	ADC_SamplingStart(ADC1);
 	while(!DMA_IsTransferComplete(DMA1, DMA_TRANSFER_COMPLETE)){}
 
+	CU_LoadConvertVoltageParams();
 	return CU_ADCtoV(MEASURE_DMAExtractVolatge());
 }
 //-----------------------------------------------
