@@ -47,8 +47,8 @@
 #define AFTER_PULSE_PAUSE_DEF		15000		// мс
 //
 #define I_PER_CURBOARD_MIN			500			// A * 10
-#define I_PER_CURBOARD_MAX			15000		// A * 10
-#define I_PER_CURBOARD_DEF			21000		// A * 10
+#define I_PER_CURBOARD_MAX			22000		// A * 10
+#define I_PER_CURBOARD_DEF			10834		// A * 10
 //
 #define CURBOARD_QUANTITY_MIN		1
 #define CURBOARD_QUANTITY_MAX		6
