@@ -79,9 +79,9 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{0, 0, 0},																	// 68
 		{0, 0, 0},																	// 69
 		{0, 0, 0},																	// 70
-		{0, 0, 0},																	// 71
-		{0, 0, 0},																	// 72
-		{0, 0, 0},																	// 73
+		{ALLOWED_ERR_MIN, ALLOWED_ERR_MAX, ALLOWED_ERR_DEF},						// 71
+		{FOLLOWING_ERR_CNT_MIN,FOLLOWING_ERR_CNT_MAX,FOLLOWING_ERR_CNT_DEF},		// 72
+		{NO, YES, NO},																// 73
 		{0, 0, 0},																	// 74
 		{0, 0, 0},																	// 75
 		{0, 0, 0},																	// 76

@@ -109,6 +109,14 @@
 #define K_AMP_RANGE1_DEF			243			// x100
 //
 #define CAN_SLAVE_NID_DEF			150
+//
+#define ALLOWED_ERR_MIN				0			// %
+#define ALLOWED_ERR_MAX				15			// %
+#define ALLOWED_ERR_DEF				10			// %
+//
+#define FOLLOWING_ERR_CNT_MIN		0
+#define FOLLOWING_ERR_CNT_MAX		30
+#define FOLLOWING_ERR_CNT_DEF		10
 
 // Types
 typedef struct __TableItemConstraint

@@ -397,6 +397,9 @@ void CONTROL_CashVariables()
 	RegulatorParams.Kp = (float)DataTable[REG_REGULATOR_RANGE0_Kp + CurrentRange * 2] / 1000;
 	RegulatorParams.Ki = (float)DataTable[REG_REGULATOR_RANGE0_Ki + CurrentRange * 2] / 1000;
 
+	RegulatorParams.RegulatorAlowedError = DataTable[REG_REGULATOR_ALLOWED_ERR];
+	RegulatorParams.FollowingErrorCounterMax = DataTable[REG_FOLLOWING_ERR_CNT];
+
 	RegulatorParams.KiTune = (CONTROL_CurrentMaxValue - RegulatorParams.CurrentTarget)
 			* (float)DataTable[REG_REGULATOR_TF_Ki_RANG0 + CurrentRange] / 1e6;
 

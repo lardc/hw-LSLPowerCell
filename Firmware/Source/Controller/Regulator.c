@@ -25,7 +25,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	else
 		FollowingErrorCounter++;
 
-	if(FollowingErrorCounter >= Regulator->FollowingErrorCounterMax)
+	if(FollowingErrorCounter >= Regulator->FollowingErrorCounterMax && !DataTable[REG_FOLLOWING_ERR_MUTE])
 		{
 			FollowingErrorCounter = 0;
 			CONTROL_StopProcess();
