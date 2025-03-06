@@ -377,7 +377,14 @@ void CONTROL_GetMaxCurrentAndDAC()
 		MaxCurrent += CONTROL_ValuesCurrent[i];
 		CurrentCounter++;
 	}
-	DataTable[REG_RESULT_CURRENT] = MaxCurrent * 10 / CurrentCounter;
+	MaxCurrent /= CurrentCounter;
+
+	// Запись выполняется для обратной совместимости
+	DataTable[REG_RESULT_CURRENT] = (MaxCurrent > 0xFFFF) ? 0xFFFF : (MaxCurrent * 10);
+
+	// Новый формат записи
+	DataTable[REG_RESULT_CURRENT2] = MaxCurrent;
+	DataTable[REG_RESULT_CURRENT2_FRAC] = (Int32U)(MaxCurrent * 1000) % 1000;
 }
 //-----------------------------------------------
 
